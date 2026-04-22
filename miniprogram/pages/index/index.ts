@@ -1,4 +1,4 @@
-import { getMonthlyEvents, getDailyEvents, getFamily } from '../../utils/cloud'
+import { getMonthlyEvents, getDailyEvents, getFamily } from '../../utils/api'
 
 const app = getApp<IAppOption>()
 
@@ -25,7 +25,6 @@ Page({
   },
 
   async onShow() {
-    // 每次显示都刷新数据（可能从编辑页回来）
     if (this.data.hasFamily) {
       await this.loadEvents()
       this.updateCalendarDots()
@@ -35,7 +34,6 @@ Page({
 
   async loadFamilyAndEvents() {
     try {
-      // 先尝试从全局获取
       let family = app.globalData.family
       if (!family) {
         const res: any = await getFamily()
@@ -86,9 +84,8 @@ Page({
     try {
       const res: any = await getDailyEvents(family._id, dateStr)
       if (res.code === 200) {
-        // 按时间排序
         const list = res.data.sort((a: any, b: any) => {
-          return new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+          return new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
         })
         this.setData({ dailyEvents: list })
       }
@@ -101,15 +98,13 @@ Page({
     const { year, month } = this.data
     const firstDay = new Date(year, month - 1, 1)
     const lastDay = new Date(year, month, 0)
-    const startWeekday = firstDay.getDay() // 0=周日
+    const startWeekday = firstDay.getDay()
     const daysInMonth = lastDay.getDate()
 
     const days: any[] = []
-    // 填充前导空白
     for (let i = 0; i < startWeekday; i++) {
       days.push({ day: 0, date: '', dots: [] })
     }
-    // 填充日期
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`
       days.push({ day: d, date: dateStr, dots: [] })
@@ -122,17 +117,16 @@ Page({
     const updatedDays = calendarDays.map((cell: any) => {
       if (!cell.date) return cell
       const dayEvents = events.filter((e: any) => {
-        const s = new Date(e.startTime)
-        const en = new Date(e.endTime)
+        const s = new Date(e.start_time)
+        const en = new Date(e.end_time)
         const c = new Date(cell.date + 'T00:00:00')
         const cEnd = new Date(cell.date + 'T23:59:59')
         return s <= cEnd && en >= c
       })
-      // 取最多3个不同成员的颜色点
       const seen = new Set<string>()
       const dots: string[] = []
       for (const e of dayEvents) {
-        const oid = e.creatorOpenid
+        const oid = e.creator_openid
         if (memberMap[oid] && memberMap[oid].color) {
           if (!seen.has(oid)) {
             seen.add(oid)

@@ -1,0 +1,246 @@
+const Router = require('koa-router')
+const db = require('../db')
+const { authMiddleware } = require('../middleware/auth')
+
+const router = new Router({ prefix: '/api/events' })
+router.use(authMiddleware())
+
+function validateEvent(data) {
+  if (!data.title || data.title.trim() === '') return '标题不能为空'
+  if (!data.startTime) return '开始时间不能为空'
+  if (!data.endTime) return '结束时间不能为空'
+  if (new Date(data.startTime) > new Date(data.endTime)) return '开始时间不能晚于结束时间'
+  return null
+}
+
+function getFamilyByMember(openid) {
+  const all = db.prepare('SELECT * FROM families').all()
+  for (const row of all) {
+    const members = JSON.parse(row.members || '[]')
+    if (members.some(m => m.openid === openid)) {
+      return { ...row, members }
+    }
+  }
+  return null
+}
+
+function rowToEvent(row) {
+  if (!row) return null
+  return {
+    ...row,
+    participants: JSON.parse(row.participants || '[]'),
+    reminders: JSON.parse(row.reminders || '[]'),
+    is_all_day: !!row.is_all_day,
+    is_done: !!row.is_done
+  }
+}
+
+// GET /api/events?year=2026&month=4  或 ?date=2026-04-22
+router.get('/', async (ctx) => {
+  const { openid } = ctx.state.user
+  const { year, month, date } = ctx.query
+
+  const family = getFamilyByMember(openid)
+  if (!family) {
+    ctx.body = { code: 404, msg: '未加入任何家庭' }
+    return
+  }
+
+  let rows
+  if (year && month) {
+    const y = parseInt(year)
+    const m = parseInt(month)
+    const start = new Date(y, m - 1, 1, 0, 0, 0).toISOString()
+    const end = new Date(y, m, 1, 0, 0, 0).toISOString()
+    rows = db.prepare(
+      `SELECT * FROM events WHERE family_id = ? AND (
+        (start_time >= ? AND start_time < ?) OR
+        (end_time >= ? AND end_time < ?) OR
+        (start_time < ? AND end_time >= ?)
+      ) ORDER BY start_time ASC`
+    ).all(family.id, start, end, start, end, start, end)
+  } else if (date) {
+    const dayStart = new Date(date + 'T00:00:00').toISOString()
+    const dayEnd = new Date(date + 'T23:59:59').toISOString()
+    rows = db.prepare(
+      `SELECT * FROM events WHERE family_id = ? AND (
+        (start_time >= ? AND start_time <= ?) OR
+        (end_time >= ? AND end_time <= ?) OR
+        (start_time < ? AND end_time > ?)
+      ) ORDER BY start_time ASC`
+    ).all(family.id, dayStart, dayEnd, dayStart, dayEnd, dayStart, dayEnd)
+  } else {
+    ctx.body = { code: 400, msg: '缺少查询参数' }
+    return
+  }
+
+  let events = rows.map(rowToEvent)
+  // 过滤不可见的个人日程
+  events = events.filter(evt => {
+    if (evt.type === 'personal' && evt.visibility === 'private') {
+      return evt.creator_openid === openid
+    }
+    return true
+  })
+
+  ctx.body = { code: 200, data: events }
+})
+
+// GET /api/events/:id
+router.get('/:id', async (ctx) => {
+  const { openid } = ctx.state.user
+  const id = parseInt(ctx.params.id)
+
+  const row = db.prepare('SELECT * FROM events WHERE id = ?').get(id)
+  if (!row) {
+    ctx.body = { code: 404, msg: '日程不存在' }
+    return
+  }
+
+  const family = getFamilyByMember(openid)
+  if (!family || family.id !== row.family_id) {
+    ctx.body = { code: 403, msg: '无权访问' }
+    return
+  }
+
+  const evt = rowToEvent(row)
+  if (evt.type === 'personal' && evt.visibility === 'private' && evt.creator_openid !== openid) {
+    ctx.body = { code: 403, msg: '无权查看' }
+    return
+  }
+
+  ctx.body = { code: 200, data: evt }
+})
+
+// POST /api/events
+router.post('/', async (ctx) => {
+  const { openid } = ctx.state.user
+  const data = ctx.request.body
+
+  const err = validateEvent(data)
+  if (err) {
+    ctx.body = { code: 400, msg: err }
+    return
+  }
+
+  const family = getFamilyByMember(openid)
+  if (!family) {
+    ctx.body = { code: 404, msg: '未加入任何家庭' }
+    return
+  }
+
+  const { title, type, participants, isAllDay, startTime, endTime, location, remark } = data
+
+  const result = db.prepare(
+    `INSERT INTO events
+    (family_id, creator_openid, title, type, participants, is_all_day, start_time, end_time, location, remark, visibility)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  ).run(
+    family.id,
+    openid,
+    title.trim(),
+    type || 'personal',
+    JSON.stringify(participants || [openid]),
+    isAllDay ? 1 : 0,
+    new Date(startTime).toISOString(),
+    new Date(endTime).toISOString(),
+    location || '',
+    remark || '',
+    (type === 'family' ? 'family' : 'private')
+  )
+
+  const evt = rowToEvent(db.prepare('SELECT * FROM events WHERE id = ?').get(result.lastInsertRowid))
+  ctx.body = { code: 200, data: evt }
+})
+
+// PUT /api/events/:id
+router.put('/:id', async (ctx) => {
+  const { openid } = ctx.state.user
+  const id = parseInt(ctx.params.id)
+  const data = ctx.request.body
+
+  const row = db.prepare('SELECT * FROM events WHERE id = ?').get(id)
+  if (!row) {
+    ctx.body = { code: 404, msg: '日程不存在' }
+    return
+  }
+
+  const family = getFamilyByMember(openid)
+  if (!family || family.id !== row.family_id) {
+    ctx.body = { code: 403, msg: '无权访问' }
+    return
+  }
+
+  const members = family.members || []
+  const member = members.find(m => m.openid === openid)
+  const canEdit = row.creator_openid === openid || (member && (member.role === 'creator' || member.role === 'admin'))
+  if (!canEdit) {
+    ctx.body = { code: 403, msg: '无权编辑此日程' }
+    return
+  }
+
+  const allowed = ['title', 'type', 'participants', 'isAllDay', 'startTime', 'endTime', 'location', 'remark', 'isDone', 'visibility']
+  const sets = []
+  const vals = []
+
+  for (const key of allowed) {
+    if (data[key] !== undefined) {
+      let dbKey = key.replace(/[A-Z]/g, m => '_' + m.toLowerCase())
+      if (dbKey === 'is_all_day' || dbKey === 'is_done') {
+        sets.push(`${dbKey} = ?`)
+        vals.push(data[key] ? 1 : 0)
+      } else if (dbKey === 'participants') {
+        sets.push(`${dbKey} = ?`)
+        vals.push(JSON.stringify(data[key]))
+      } else if (dbKey === 'start_time' || dbKey === 'end_time') {
+        sets.push(`${dbKey} = ?`)
+        vals.push(new Date(data[key]).toISOString())
+      } else {
+        sets.push(`${dbKey} = ?`)
+        vals.push(data[key])
+      }
+    }
+  }
+
+  if (sets.length === 0) {
+    ctx.body = { code: 400, msg: '无更新内容' }
+    return
+  }
+
+  sets.push('updated_at = CURRENT_TIMESTAMP')
+  vals.push(id)
+
+  db.prepare(`UPDATE events SET ${sets.join(', ')} WHERE id = ?`).run(...vals)
+  ctx.body = { code: 200, msg: '更新成功' }
+})
+
+// DELETE /api/events/:id
+router.delete('/:id', async (ctx) => {
+  const { openid } = ctx.state.user
+  const id = parseInt(ctx.params.id)
+
+  const row = db.prepare('SELECT * FROM events WHERE id = ?').get(id)
+  if (!row) {
+    ctx.body = { code: 404, msg: '日程不存在' }
+    return
+  }
+
+  const family = getFamilyByMember(openid)
+  if (!family || family.id !== row.family_id) {
+    ctx.body = { code: 403, msg: '无权访问' }
+    return
+  }
+
+  const members = family.members || []
+  const member = members.find(m => m.openid === openid)
+  const canDelete = row.creator_openid === openid || (member && (member.role === 'creator' || member.role === 'admin'))
+  if (!canDelete) {
+    ctx.body = { code: 403, msg: '无权删除此日程' }
+    return
+  }
+
+  db.prepare('DELETE FROM events WHERE id = ?').run(id)
+  ctx.body = { code: 200, msg: '删除成功' }
+})
+
+module.exports = router

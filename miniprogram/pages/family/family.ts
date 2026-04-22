@@ -1,4 +1,4 @@
-import { createFamily, joinFamily, getFamily, refreshInviteCode, leaveFamily } from '../../utils/cloud'
+import { createFamily, joinFamily, getFamily, refreshInviteCode, leaveFamily } from '../../utils/api'
 
 const app = getApp<IAppOption>()
 
@@ -74,7 +74,6 @@ Page({
         wx.showToast({ title: '创建成功', icon: 'success' })
         await this.loadFamily()
         this.setData({ showCreate: false })
-        // 返回首页刷新
         const pages = getCurrentPages()
         if (pages.length > 1) {
           const prev = pages[pages.length - 2] as any
@@ -127,7 +126,7 @@ Page({
     if (!family) return
     wx.showLoading({ title: '刷新中' })
     try {
-      const res: any = await refreshInviteCode(family._id)
+      const res: any = await refreshInviteCode({ familyId: family._id })
       if (res.code === 200) {
         wx.showToast({ title: '已刷新', icon: 'success' })
         await this.loadFamily()
@@ -158,7 +157,7 @@ Page({
         if (res.confirm) {
           wx.showLoading({ title: '处理中' })
           try {
-            const ret: any = await leaveFamily(family._id)
+            const ret: any = await leaveFamily({ familyId: family._id })
             if (ret.code === 200) {
               wx.showToast({ title: '已退出', icon: 'success' })
               app.globalData.family = null

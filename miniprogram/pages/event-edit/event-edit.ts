@@ -1,4 +1,4 @@
-import { createEvent, updateEvent, getEvent, deleteEvent } from '../../utils/cloud'
+import { createEvent, updateEvent, getEvent, deleteEvent } from '../../utils/api'
 
 const app = getApp<IAppOption>()
 
@@ -10,7 +10,6 @@ Page({
     family: null as any,
     memberMap: {} as Record<string, any>,
 
-    // 表单字段
     title: '',
     type: 'personal',
     participants: [] as string[],
@@ -29,11 +28,9 @@ Page({
     this.setData({ family, memberMap, familyId: options.familyId || (family && family._id) || '' })
 
     if (options.id) {
-      // 编辑模式
       this.setData({ isEdit: true, eventId: options.id })
       await this.loadEvent(options.id)
     } else {
-      // 新建模式
       const dateStr = options.date || this.formatDate(new Date())
       this.setData({
         startDate: dateStr,
@@ -51,13 +48,13 @@ Page({
       const res: any = await getEvent(eventId)
       if (res.code === 200) {
         const e = res.data
-        const start = new Date(e.startTime)
-        const end = new Date(e.endTime)
+        const start = new Date(e.start_time)
+        const end = new Date(e.end_time)
         this.setData({
           title: e.title,
           type: e.type,
           participants: e.participants || [],
-          isAllDay: e.isAllDay,
+          isAllDay: e.is_all_day,
           startDate: this.formatDate(start),
           startTime: this.formatTime(start),
           endDate: this.formatDate(end),
@@ -136,7 +133,7 @@ Page({
     try {
       let res: any
       if (isEdit) {
-        res = await updateEvent({ eventId, ...payload })
+        res = await updateEvent(eventId, payload)
       } else {
         res = await createEvent(payload)
       }
