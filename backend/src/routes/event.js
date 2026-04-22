@@ -28,6 +28,7 @@ function rowToEvent(row) {
   if (!row) return null
   return {
     ...row,
+    _id: String(row.id),
     participants: JSON.parse(row.participants || '[]'),
     reminders: JSON.parse(row.reminders || '[]'),
     is_all_day: !!row.is_all_day,

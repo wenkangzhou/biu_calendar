@@ -18,6 +18,7 @@ function rowToFamily(row) {
   if (!row) return null
   return {
     ...row,
+    _id: String(row.id),
     members: JSON.parse(row.members || '[]')
   }
 }
