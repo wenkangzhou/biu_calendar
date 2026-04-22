@@ -1,0 +1,60 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+  <!-- 无家庭 -->
+  <block wx:elif="{{!hasFamily}}">
+    <view class="empty">
+      <view class="empty-title">您还没有加入家庭</view>
+      <view class="btn-group">
+        <button class="btn-primary" bindtap="toggleCreate">创建家庭</button>
+        <button class="btn-secondary" bindtap="toggleJoin">加入家庭</button>
+      </view>
+    </view>
+
+    <!-- 创建家庭表单 -->
+    <view wx:if="{{showCreate}}" class="form-card">
+      <view class="form-title">创建家庭</view>
+      <input class="form-input" placeholder="家庭名称（如：张家）" value="{{createName}}" bindinput="onCreateNameChange" />
+      <input class="form-input" placeholder="您在家庭中的昵称" value="{{createNickName}}" bindinput="onCreateNickChange" />
+      <input class="form-input" placeholder="身份标签（如：爸爸、妈妈）" value="{{createIdentity}}" bindinput="onCreateIdentityChange" />
+      <button class="btn-primary" bindtap="doCreate">确认创建</button>
+    </view>
+
+    <!-- 加入家庭表单 -->
+    <view wx:if="{{showJoin}}" class="form-card">
+      <view class="form-title">加入家庭</view>
+      <input class="form-input" placeholder="6位邀请码" maxlength="6" value="{{joinCode}}" bindinput="onJoinCodeChange" />
+      <input class="form-input" placeholder="您在家庭中的昵称" value="{{joinNickName}}" bindinput="onJoinNickChange" />
+      <input class="form-input" placeholder="身份标签（如：爸爸、妈妈）" value="{{joinIdentity}}" bindinput="onJoinIdentityChange" />
+      <button class="btn-primary" bindtap="doJoin">确认加入</button>
+    </view>
+  </block>
+
+  <!-- 已有家庭 -->
+  <block wx:else>
+    <view class="family-card">
+      <view class="family-title">{{family.name}}</view>
+      <view class="invite-box">
+        <view class="invite-label">邀请码</view>
+        <view class="invite-code" bindtap="onCopyCode">{{family.inviteCode}}</view>
+        <view class="invite-tip">24小时内有效，点击复制</view>
+        <button class="btn-small" bindtap="onRefreshCode">刷新邀请码</button>
+      </view>
+    </view>
+
+    <view class="member-card">
+      <view class="card-title">家庭成员（{{family.members.length}}人）</view>
+      <view wx:for="{{family.members}}" wx:key="openid" class="member-item">
+        <view class="member-avatar" style="background-color: {{item.color}};">{{item.nickName[0]}}</view>
+        <view class="member-info">
+          <view class="member-name">{{item.nickName}}</view>
+          <view class="member-tag">{{item.identityTag}} · {{item.role === 'creator' ? '创建者' : item.role === 'admin' ? '管理员' : '成员'}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="danger-zone">
+      <button class="btn-danger" bindtap="onLeave">退出家庭</button>
+    </view>
+  </block>
+</view>

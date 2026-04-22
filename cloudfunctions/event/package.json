@@ -1,0 +1,12 @@
+{
+  "name": "event",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

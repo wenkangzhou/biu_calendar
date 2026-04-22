@@ -1,0 +1,77 @@
+<view class="page">
+  <!-- 无家庭状态 -->
+  <view wx:if="{{!hasFamily && !loading}}" class="empty-state">
+    <view class="empty-title">欢迎使用家庭日历</view>
+    <view class="empty-desc">创建或加入一个家庭，开始共享日程</view>
+    <button class="btn-primary" bindtap="onGoFamily">去设置家庭</button>
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:elif="{{loading}}" class="loading-state">
+    <view class="loading-text">加载中...</view>
+  </view>
+
+  <!-- 主界面 -->
+  <block wx:else>
+    <!-- 顶部家庭信息 -->
+    <view class="header" bindtap="onGoFamily">
+      <view class="family-name">{{family.name}}</view>
+      <view class="member-avatars">
+        <view wx:for="{{family.members}}" wx:key="openid" class="avatar-wrap">
+          <view class="avatar" style="background-color: {{item.color}};">
+            {{item.nickName[0]}}
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 日历 -->
+    <view class="calendar-card">
+      <view class="calendar-header">
+        <view class="nav-btn" bindtap="onPrevMonth">‹</view>
+        <view class="month-title">{{year}}年{{month}}月</view>
+        <view class="nav-btn" bindtap="onNextMonth">›</view>
+      </view>
+
+      <view class="weekdays">
+        <view wx:for="{{['日','一','二','三','四','五','六']}}" wx:key="*this" class="weekday">{{item}}</view>
+      </view>
+
+      <view class="days-grid">
+        <view wx:for="{{calendarDays}}" wx:key="date"
+          class="day-cell {{item.date === selectedDate ? 'selected' : ''}} {{item.date === today ? 'today' : ''}} {{item.day === 0 ? 'empty' : ''}}"
+          bindtap="onSelectDate"
+          data-date="{{item.date}}">
+          <view class="day-num">{{item.day > 0 ? item.day : ''}}</view>
+          <view class="dots-row" wx:if="{{item.dots && item.dots.length > 0}}">
+            <view wx:for="{{item.dots}}" wx:for-item="dot" wx:key="*this" class="dot" style="background-color: {{dot}};"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 当日日程 -->
+    <view class="daily-events">
+      <view class="section-title">{{selectedDate}} 日程</view>
+      <view wx:if="{{dailyEvents.length === 0}}" class="no-event">
+        当日暂无日程
+      </view>
+      <view wx:for="{{dailyEvents}}" wx:key="_id" class="event-item" bindtap="onEditEvent" data-id="{{item._id}}">
+        <view class="event-bar" style="background-color: {{getMemberColor(item.creatorOpenid)}};"></view>
+        <view class="event-body">
+          <view class="event-title">{{item.title}}</view>
+          <view class="event-meta">
+            <text wx:if="{{!item.isAllDay}}">{{formatTime(item.startTime)}} - {{formatTime(item.endTime)}}</text>
+            <text wx:else>全天</text>
+            <text class="event-type {{item.type}}">{{item.type === 'family' ? '家庭' : '个人'}}</text>
+            <text class="event-creator">{{getMemberName(item.creatorOpenid)}}</text>
+          </view>
+          <view wx:if="{{item.location}}" class="event-location">📍 {{item.location}}</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 悬浮添加按钮 -->
+  <view wx:if="{{hasFamily}}" class="fab" bindtap="onAddEvent">+</view>
+</view>

@@ -1,0 +1,80 @@
+<view class="page">
+  <view class="form-group">
+    <view class="form-label">标题</view>
+    <input class="form-input" placeholder="日程标题" value="{{title}}" bindinput="onTitleChange" />
+  </view>
+
+  <view class="form-group">
+    <view class="form-label">类型</view>
+    <radio-group class="radio-group" bindchange="onTypeChange">
+      <label class="radio-item">
+        <radio value="personal" checked="{{type === 'personal'}}" />
+        <text>个人</text>
+      </label>
+      <label class="radio-item">
+        <radio value="family" checked="{{type === 'family'}}" />
+        <text>家庭</text>
+      </label>
+    </radio-group>
+  </view>
+
+  <!-- 参与人选择 -->
+  <view class="form-group" wx:if="{{type === 'family'}}">
+    <view class="form-label">参与人</view>
+    <view class="participant-list">
+      <view wx:for="{{family.members}}" wx:key="openid"
+        class="participant-item {{participants.includes(item.openid) ? 'active' : ''}}"
+        bindtap="onParticipantToggle"
+        data-id="{{item.openid}}">
+        <view class="p-avatar" style="background-color: {{item.color}};">{{item.nickName[0]}}</view>
+        <view class="p-name">{{item.nickName}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-group">
+    <view class="form-label">
+      <text>全天</text>
+      <switch checked="{{isAllDay}}" bindchange="onAllDayChange" />
+    </view>
+  </view>
+
+  <view class="form-group">
+    <view class="form-label">开始时间</view>
+    <view class="datetime-row">
+      <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+        <view class="picker-value">{{startDate}}</view>
+      </picker>
+      <picker wx:if="{{!isAllDay}}" mode="time" value="{{startTime}}" bindchange="onStartTimeChange">
+        <view class="picker-value">{{startTime}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="form-group">
+    <view class="form-label">结束时间</view>
+    <view class="datetime-row">
+      <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
+        <view class="picker-value">{{endDate}}</view>
+      </picker>
+      <picker wx:if="{{!isAllDay}}" mode="time" value="{{endTime}}" bindchange="onEndTimeChange">
+        <view class="picker-value">{{endTime}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="form-group">
+    <view class="form-label">地点（选填）</view>
+    <input class="form-input" placeholder="地点" value="{{location}}" bindinput="onLocationChange" />
+  </view>
+
+  <view class="form-group">
+    <view class="form-label">备注（选填）</view>
+    <textarea class="form-textarea" placeholder="备注信息" value="{{remark}}" bindinput="onRemarkChange" />
+  </view>
+
+  <view class="btn-group">
+    <button class="btn-primary" bindtap="onSubmit">{{isEdit ? '保存' : '创建'}}</button>
+    <button wx:if="{{isEdit}}" class="btn-danger" bindtap="onDelete">删除日程</button>
+  </view>
+</view>
