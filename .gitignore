@@ -5,3 +5,10 @@ miniprogram_npm/
 .vscode/
 .idea/
 project.private.config.json
+
+# 后端敏感文件 & 本地生成文件
+backend/.env
+backend/data/
+backend/logs/
+backend/yarn.lock
+package-lock.json
