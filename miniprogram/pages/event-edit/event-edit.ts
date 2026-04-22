@@ -1,6 +1,6 @@
-import { createEvent, updateEvent, getEvent, deleteEvent } from '../../utils/api'
+import { createEvent, updateEvent, getEvent, deleteEvent, getToken } from '../../utils/api'
 
-const app = getApp<IAppOption>()
+const app = getApp<any>()
 
 Page({
   data: {
@@ -23,6 +23,9 @@ Page({
   },
 
   async onLoad(options: any) {
+    if (!getToken() && app.loginPromise) {
+      await app.loginPromise
+    }
     const family = app.globalData.family
     const memberMap = app.globalData.memberMap || {}
     this.setData({ family, memberMap, familyId: options.familyId || (family && family._id) || '' })

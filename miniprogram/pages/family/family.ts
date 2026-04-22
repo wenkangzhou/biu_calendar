@@ -1,6 +1,6 @@
-import { createFamily, joinFamily, getFamily, refreshInviteCode, leaveFamily } from '../../utils/api'
+import { createFamily, joinFamily, getFamily, refreshInviteCode, leaveFamily, getToken } from '../../utils/api'
 
-const app = getApp<IAppOption>()
+const app = getApp<any>()
 
 Page({
   data: {
@@ -18,6 +18,9 @@ Page({
   },
 
   async onLoad() {
+    if (!getToken() && app.loginPromise) {
+      await app.loginPromise
+    }
     await this.loadFamily()
   },
 

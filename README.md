@@ -64,14 +64,14 @@
 cd backend
 
 # 安装依赖
-npm install
+yarn install
 
 # 配置环境变量
 cp .env.example .env
 # 编辑 .env，填入你的小程序 AppSecret
 
 # 启动服务
-npm start
+yarn start
 ```
 
 服务默认运行在 `http://localhost:3000`，API 基础路径为 `/api`。
@@ -114,7 +114,7 @@ git clone https://github.com/wenkangzhou/biu_calendar.git
 cd biu_calendar/backend
 
 # 3. 安装依赖
-npm install
+yarn install
 
 # 4. 配置环境变量
 cp .env.example .env

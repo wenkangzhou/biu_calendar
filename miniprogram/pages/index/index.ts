@@ -1,6 +1,6 @@
-import { getMonthlyEvents, getDailyEvents, getFamily } from '../../utils/api'
+import { getMonthlyEvents, getDailyEvents, getFamily, getToken } from '../../utils/api'
 
-const app = getApp<IAppOption>()
+const app = getApp<any>()
 
 Page({
   data: {
@@ -21,6 +21,11 @@ Page({
     const today = this.formatDate(new Date())
     this.setData({ today, selectedDate: today })
     this.buildCalendar()
+
+    // 如果登录还在进行中，先等待
+    if (!getToken() && app.loginPromise) {
+      await app.loginPromise
+    }
     await this.loadFamilyAndEvents()
   },
 

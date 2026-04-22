@@ -1,4 +1,4 @@
-import { login, removeToken } from './utils/api'
+import { login, getToken } from './utils/api'
 
 export interface IAppOption {
   globalData: {
@@ -7,7 +7,8 @@ export interface IAppOption {
     family?: any
     memberMap?: Record<string, any>
   }
-  initLogin: () => Promise<void>
+  initLogin?: () => Promise<void>
+  loginPromise?: Promise<void>
 }
 
 App<IAppOption>({
@@ -18,20 +19,17 @@ App<IAppOption>({
     memberMap: {}
   },
 
-  async onLaunch() {
-    // 清除可能过期的 token
-    removeToken()
-    // 尝试自动登录
-    await this.initLogin()
+  onLaunch() {
+    // 如果没有 token，触发登录；有 token 则复用
+    if (!getToken()) {
+      this.loginPromise = this.initLogin!()
+    }
   },
 
   async initLogin() {
     try {
       const wxRes: any = await new Promise((resolve, reject) => {
-        wx.login({
-          success: resolve,
-          fail: reject
-        })
+        wx.login({ success: resolve, fail: reject })
       })
 
       if (!wxRes.code) {
