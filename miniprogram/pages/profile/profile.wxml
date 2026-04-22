@@ -1,0 +1,101 @@
+<view class="page">
+  <!-- 个人信息卡片 -->
+  <view class="profile-card">
+    <view class="profile-main" bindtap="onEditProfile">
+      <view class="profile-avatar">
+        <text wx:if="{{!user?.nick_name}}">👤</text>
+        <text wx:else>{{user.nick_name[0]}}</text>
+      </view>
+      <view class="profile-info">
+        <view class="profile-name">
+          {{user?.nick_name || '点击设置昵称'}}
+          <text class="edit-icon">✏️</text>
+        </view>
+      </view>
+    </view>
+    <view class="profile-stats">
+      <view class="stat-item">
+        <view class="stat-num">{{stats.total}}</view>
+        <view class="stat-label">总日程</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-num">{{stats.today}}</view>
+        <view class="stat-label">今日</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-num">{{stats.todo}}</view>
+        <view class="stat-label">待办</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 提示卡片 -->
+  <view wx:if="{{!user?.nick_name}}" class="notice-card" bindtap="onEditProfile">
+    <view class="notice-icon">ℹ️</view>
+    <view class="notice-body">
+      <view class="notice-title">请先设置你的昵称和头像</view>
+      <view class="notice-desc">方便其他家庭成员识别你</view>
+    </view>
+    <view class="notice-arrow">›</view>
+  </view>
+
+  <!-- 家庭卡片 -->
+  <view class="section-card">
+    <view wx:if="{{!hasFamily}}" class="empty-family">
+      <view class="empty-icon">📅</view>
+      <view class="empty-text">还没有加入家庭日历</view>
+      <button class="btn-primary-small" bindtap="onGoFamily">创建或加入</button>
+    </view>
+    <view wx:else class="family-info" bindtap="onGoFamily">
+      <view class="family-name">{{family.name}}</view>
+      <view class="family-members">
+        <view wx:for="{{family.members}}" wx:key="openid" class="fam-avatar" style="background-color: {{item.color}};">
+          {{item.nickName[0]}}
+        </view>
+      </view>
+      <view class="fam-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- 设置列表 -->
+  <view class="settings-list">
+    <view class="setting-item" bindtap="onNotification">
+      <view class="setting-left">
+        <view class="setting-icon icon-bell">🔔</view>
+        <text class="setting-title">消息通知</text>
+      </view>
+      <view class="setting-right">
+        <text class="setting-status">已开启</text>
+        <text class="setting-arrow">›</text>
+      </view>
+    </view>
+    <view class="setting-item" bindtap="onSubscribe">
+      <view class="setting-left">
+        <text class="setting-title">订阅日程提醒</text>
+      </view>
+      <view class="setting-right">
+        <text class="setting-status">点击订阅</text>
+        <text class="setting-arrow">›</text>
+      </view>
+    </view>
+    <view class="setting-item" bindtap="onFontSize">
+      <view class="setting-left">
+        <text class="setting-title">字体大小</text>
+      </view>
+      <view class="setting-right">
+        <text class="setting-status">正常</text>
+        <text class="setting-arrow">›</text>
+      </view>
+    </view>
+    <view class="setting-item" bindtap="onClearCache">
+      <view class="setting-left">
+        <view class="setting-icon icon-trash">🗑️</view>
+        <text class="setting-title">清理缓存</text>
+      </view>
+      <view class="setting-right">
+        <text class="setting-status">清理临时数据</text>
+        <text class="setting-arrow">›</text>
+      </view>
+    </view>
+  </view>
+</view>

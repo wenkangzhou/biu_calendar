@@ -1,0 +1,33 @@
+<view class="page">
+  <view class="notice-bar">
+    <view class="notice-icon">ℹ️</view>
+    <text class="notice-text">设置你的昵称和头像，方便其他家庭成员识别你</text>
+  </view>
+
+  <view class="section-title">选择头像</view>
+  <view class="emoji-grid">
+    <view wx:for="{{emojiList}}" wx:key="index"
+      class="emoji-item {{selectedIndex === item.index ? 'selected' : ''}}"
+      style="background-color: {{item.color}};"
+      bindtap="onSelectEmoji"
+      data-index="{{item.index}}">
+      <text class="emoji-text">{{item.emoji}}</text>
+      <view wx:if="{{selectedIndex === item.index}}" class="check-mark">✓</view>
+    </view>
+  </view>
+
+  <view class="section-title">设置昵称 <text class="required">*</text></view>
+  <input class="name-input" placeholder="请输入你的昵称（如：爸爸、妈妈、小明）" value="{{nickName}}" bindinput="onNickNameChange" maxlength="12" />
+  <view class="input-tip">建议使用家庭称呼或真名，方便家人识别</view>
+
+  <view class="section-title">预览效果</view>
+  <view class="preview-card">
+    <view class="preview-avatar" style="background-color: {{emojiList[selectedIndex].color}};">
+      {{emojiList[selectedIndex].emoji}}
+    </view>
+    <view class="preview-name">{{previewName}}</view>
+  </view>
+
+  <button class="btn-primary" bindtap="onSubmit">确认并继续</button>
+  <view class="skip-link" bindtap="onSkip">稍后设置</view>
+</view>

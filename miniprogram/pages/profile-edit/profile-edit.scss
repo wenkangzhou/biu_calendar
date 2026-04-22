@@ -1,0 +1,128 @@
+page {
+  background-color: #f5f6fa;
+}
+
+.page {
+  padding: 20rpx 30rpx 60rpx;
+}
+
+.notice-bar {
+  background: #e8f4f8;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 30rpx;
+  .notice-icon {
+    font-size: 32rpx;
+    margin-right: 12rpx;
+    flex-shrink: 0;
+  }
+  .notice-text {
+    font-size: 26rpx;
+    color: #4A90D9;
+    line-height: 1.5;
+  }
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  margin: 30rpx 0 20rpx;
+  .required {
+    color: #FF6B6B;
+  }
+}
+
+.emoji-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+
+.emoji-item {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  .emoji-text {
+    font-size: 56rpx;
+  }
+  &.selected {
+    box-shadow: 0 0 0 4rpx #4A90D9;
+  }
+  .check-mark {
+    position: absolute;
+    bottom: 4rpx;
+    right: 4rpx;
+    width: 32rpx;
+    height: 32rpx;
+    background: #4A90D9;
+    color: #fff;
+    font-size: 20rpx;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.name-input {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  font-size: 30rpx;
+  border: 2rpx solid #eee;
+}
+
+.input-tip {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 12rpx;
+}
+
+.preview-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  display: flex;
+  align-items: center;
+  border: 2rpx dashed #ddd;
+  .preview-avatar {
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40rpx;
+    margin-right: 20rpx;
+  }
+  .preview-name {
+    font-size: 32rpx;
+    color: #333;
+    font-weight: 500;
+  }
+}
+
+.btn-primary {
+  background: #4A90D9;
+  color: #fff;
+  font-size: 32rpx;
+  padding: 24rpx 0;
+  border-radius: 80rpx;
+  border: none;
+  margin-top: 40rpx;
+  width: 100%;
+}
+
+.skip-link {
+  text-align: center;
+  font-size: 28rpx;
+  color: #999;
+  margin-top: 30rpx;
+}

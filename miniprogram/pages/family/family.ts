@@ -24,6 +24,13 @@ Page({
     await this.loadFamily()
   },
 
+  async onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 1 })
+    }
+    await this.loadFamily()
+  },
+
   async loadFamily() {
     try {
       const res: any = await getFamily()

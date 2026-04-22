@@ -1,0 +1,208 @@
+page {
+  background-color: #f5f6fa;
+}
+
+.page {
+  padding-bottom: 40rpx;
+}
+
+/* 个人信息卡片 */
+.profile-card {
+  background: linear-gradient(135deg, #4A90D9 0%, #6BA8E8 100%);
+  margin: 20rpx;
+  border-radius: 24rpx;
+  padding: 40rpx 30rpx 30rpx;
+  color: #fff;
+}
+
+.profile-main {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.profile-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  margin-right: 24rpx;
+}
+
+.profile-name {
+  font-size: 36rpx;
+  font-weight: 600;
+  .edit-icon {
+    font-size: 24rpx;
+    margin-left: 10rpx;
+    opacity: 0.8;
+  }
+}
+
+.profile-stats {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1rpx solid rgba(255,255,255,0.2);
+  padding-top: 24rpx;
+}
+
+.stat-item {
+  text-align: center;
+  .stat-num {
+    font-size: 40rpx;
+    font-weight: 700;
+  }
+  .stat-label {
+    font-size: 24rpx;
+    opacity: 0.8;
+    margin-top: 6rpx;
+  }
+}
+
+/* 提示卡片 */
+.notice-card {
+  background: #fff8e6;
+  margin: 20rpx;
+  border-radius: 16rpx;
+  padding: 24rpx 30rpx;
+  display: flex;
+  align-items: center;
+  border: 1rpx solid #ffe4a1;
+}
+
+.notice-icon {
+  font-size: 36rpx;
+  margin-right: 16rpx;
+}
+
+.notice-body {
+  flex: 1;
+  .notice-title {
+    font-size: 28rpx;
+    color: #b87800;
+    font-weight: 500;
+  }
+  .notice-desc {
+    font-size: 24rpx;
+    color: #d4a030;
+    margin-top: 6rpx;
+  }
+}
+
+.notice-arrow {
+  font-size: 32rpx;
+  color: #d4a030;
+}
+
+/* 家庭卡片 */
+.section-card {
+  background: #fff;
+  margin: 20rpx;
+  border-radius: 20rpx;
+  padding: 40rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.04);
+}
+
+.empty-family {
+  text-align: center;
+  .empty-icon {
+    font-size: 80rpx;
+    margin-bottom: 20rpx;
+  }
+  .empty-text {
+    font-size: 28rpx;
+    color: #666;
+    margin-bottom: 30rpx;
+  }
+  .btn-primary-small {
+    background: #4A90D9;
+    color: #fff;
+    font-size: 28rpx;
+    padding: 16rpx 40rpx;
+    border-radius: 40rpx;
+    border: none;
+    display: inline-block;
+  }
+}
+
+.family-info {
+  display: flex;
+  align-items: center;
+  .family-name {
+    font-size: 32rpx;
+    font-weight: 600;
+    color: #333;
+    flex: 1;
+  }
+  .family-members {
+    display: flex;
+    margin-right: 20rpx;
+    .fam-avatar {
+      width: 56rpx;
+      height: 56rpx;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 24rpx;
+      margin-left: -8rpx;
+      border: 2rpx solid #fff;
+      &:first-child { margin-left: 0; }
+    }
+  }
+  .fam-arrow {
+    font-size: 32rpx;
+    color: #ccc;
+  }
+}
+
+/* 设置列表 */
+.settings-list {
+  background: #fff;
+  margin: 20rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+  &:last-child { border-bottom: none; }
+  &:active { background: #f9f9f9; }
+}
+
+.setting-left {
+  display: flex;
+  align-items: center;
+  .setting-icon {
+    font-size: 36rpx;
+    margin-right: 16rpx;
+  }
+  .setting-title {
+    font-size: 30rpx;
+    color: #333;
+  }
+}
+
+.setting-right {
+  display: flex;
+  align-items: center;
+  .setting-status {
+    font-size: 26rpx;
+    color: #999;
+    margin-right: 10rpx;
+  }
+  .setting-arrow {
+    font-size: 32rpx;
+    color: #ccc;
+  }
+}

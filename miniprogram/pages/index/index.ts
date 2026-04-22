@@ -8,6 +8,7 @@ Page({
     month: new Date().getMonth() + 1,
     today: '',
     selectedDate: '',
+    weekdayText: '',
     calendarDays: [] as any[],
     events: [] as any[],
     dailyEvents: [] as any[],
@@ -19,7 +20,11 @@ Page({
 
   async onLoad() {
     const today = this.formatDate(new Date())
-    this.setData({ today, selectedDate: today })
+    this.setData({
+      today,
+      selectedDate: today,
+      weekdayText: this.getWeekdayText(new Date())
+    })
     this.buildCalendar()
 
     // 如果登录还在进行中，先等待
@@ -30,6 +35,9 @@ Page({
   },
 
   async onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 0 })
+    }
     if (this.data.hasFamily) {
       await this.loadEvents()
       this.updateCalendarDots()
@@ -128,19 +136,15 @@ Page({
         const cEnd = new Date(cell.date + 'T23:59:59')
         return s <= cEnd && en >= c
       })
-      const seen = new Set<string>()
-      const dots: string[] = []
-      for (const e of dayEvents) {
-        const oid = e.creator_openid
-        if (memberMap[oid] && memberMap[oid].color) {
-          if (!seen.has(oid)) {
-            seen.add(oid)
-            dots.push(memberMap[oid].color)
-            if (dots.length >= 3) break
-          }
+      // 取第一个日程的成员颜色作为横条色
+      let barColor = ''
+      if (dayEvents.length > 0) {
+        const firstOid = dayEvents[0].creator_openid
+        if (memberMap[firstOid] && memberMap[firstOid].color) {
+          barColor = memberMap[firstOid].color
         }
       }
-      return { ...cell, dots, eventCount: dayEvents.length }
+      return { ...cell, barColor, eventCount: dayEvents.length }
     })
     this.setData({ calendarDays: updatedDays })
   },
@@ -148,8 +152,29 @@ Page({
   onSelectDate(e: any) {
     const date = e.currentTarget.dataset.date
     if (!date) return
-    this.setData({ selectedDate: date })
+    this.setData({
+      selectedDate: date,
+      weekdayText: this.getWeekdayText(new Date(date + 'T00:00:00'))
+    })
     this.loadDailyEvents(date)
+  },
+
+  onGoToday() {
+    const today = this.formatDate(new Date())
+    const now = new Date()
+    let { year, month } = this.data
+    if (year !== now.getFullYear() || month !== now.getMonth() + 1) {
+      year = now.getFullYear()
+      month = now.getMonth() + 1
+      this.setData({ year, month, selectedDate: today, weekdayText: this.getWeekdayText(now) }, () => {
+        this.buildCalendar()
+        this.loadEvents().then(() => this.updateCalendarDots())
+        this.loadDailyEvents(today)
+      })
+    } else {
+      this.setData({ selectedDate: today, weekdayText: this.getWeekdayText(now) })
+      this.loadDailyEvents(today)
+    }
   },
 
   onPrevMonth() {
@@ -173,7 +198,7 @@ Page({
   },
 
   onGoFamily() {
-    wx.navigateTo({ url: '/pages/family/family' })
+    wx.switchTab({ url: '/pages/family/family' })
   },
 
   onAddEvent() {
@@ -211,5 +236,10 @@ Page({
   getMemberName(openid: string) {
     const m = this.data.memberMap[openid]
     return m ? m.nickName : '未知'
+  },
+
+  getWeekdayText(d: Date) {
+    const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+    return weekdays[d.getDay()]
   }
 })
