@@ -19,6 +19,9 @@ function rowToFamily(row) {
   return {
     ...row,
     _id: String(row.id),
+    inviteCode: row.invite_code,
+    inviteCodeExpireAt: row.invite_code_expire_at,
+    creatorOpenid: row.creator_openid,
     members: JSON.parse(row.members || '[]')
   }
 }

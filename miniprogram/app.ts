@@ -42,6 +42,7 @@ App<IAppOption>({
         this.globalData.openid = res.data.openid
         this.globalData.userInfo = res.data.user
         this.globalData.family = res.data.family
+        wx.setStorageSync('openid', res.data.openid)
 
         if (res.data.family && res.data.family.members) {
           const map: Record<string, any> = {}

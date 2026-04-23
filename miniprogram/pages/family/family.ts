@@ -46,7 +46,7 @@ Page({
           family: res.data,
           hasFamily: true,
           loading: false,
-          myOpenid: app.globalData.openid
+          myOpenid: app.globalData.openid || wx.getStorageSync('openid')
         })
       } else {
         this.setData({ hasFamily: false, loading: false })
@@ -75,14 +75,15 @@ Page({
 
   onMemberTap(e: any) {
     const openid = e.currentTarget.dataset.openid
-    if (openid !== app.globalData.openid) return
+    const myOpenid = app.globalData.openid || wx.getStorageSync('openid')
+    if (openid !== myOpenid) return
     this.toggleEdit()
   },
 
   toggleEdit() {
     const { family } = this.data
     if (!family) return
-    const openid = app.globalData.openid
+    const openid = app.globalData.openid || wx.getStorageSync('openid')
     if (!openid) {
       wx.showToast({ title: '用户信息异常', icon: 'none' })
       return
@@ -251,5 +252,20 @@ Page({
   formatDate(iso: string) {
     const d = new Date(iso)
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
+  },
+
+  onShareAppMessage() {
+    const { family } = this.data
+    if (family) {
+      return {
+        title: `加入${family.name}的家庭日历`,
+        path: '/pages/family/family',
+        desc: `邀请码：${family.inviteCode || ''}`
+      }
+    }
+    return {
+      title: '家庭共享日历',
+      path: '/pages/family/family'
+    }
   }
 })

@@ -81,5 +81,12 @@ Page({
 
   onNotification() {
     wx.showToast({ title: '消息通知开发中', icon: 'none' })
+  },
+
+  onShareAppMessage() {
+    return {
+      title: '家庭共享日历',
+      path: '/pages/index/index'
+    }
   }
 })

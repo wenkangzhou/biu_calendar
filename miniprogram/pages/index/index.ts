@@ -241,5 +241,13 @@ Page({
   getWeekdayText(d: Date) {
     const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
     return weekdays[d.getDay()]
+  },
+
+  onShareAppMessage() {
+    const { family } = this.data
+    return {
+      title: family ? `${family.name}的家庭日历` : '家庭共享日历',
+      path: '/pages/index/index'
+    }
   }
 })
