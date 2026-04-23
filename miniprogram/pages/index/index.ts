@@ -1,6 +1,6 @@
 import { getMonthlyEvents, getDailyEvents, getFamily, getToken } from '../../utils/api'
 
-const { Solar } = require('lunar-javascript')
+const { Solar } = require('../../utils/lunar-javascript/index')
 
 const app = getApp<any>()
 
