@@ -122,6 +122,11 @@ page {
       font-weight: 700;
       color: #4ECDC4;
       letter-spacing: 10rpx;
+      &.empty {
+        font-size: 32rpx;
+        color: #bbb;
+        letter-spacing: 0;
+      }
     }
     .invite-tip {
       font-size: 22rpx;

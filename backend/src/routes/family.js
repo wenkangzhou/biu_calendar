@@ -181,6 +181,36 @@ router.post('/refresh-code', async (ctx) => {
   ctx.body = { code: 200, data: { inviteCode, inviteCodeExpireAt: expireAt } }
 })
 
+// PUT /api/family
+router.put('/', async (ctx) => {
+  const { openid } = ctx.state.user
+  const { familyId, name } = ctx.request.body
+
+  const row = await get('SELECT * FROM families WHERE id = ?', [familyId])
+  if (!row) {
+    ctx.body = { code: 404, msg: '家庭不存在' }
+    return
+  }
+
+  const members = JSON.parse(row.members || '[]')
+  const me = members.find(m => m.openid === openid)
+  if (!me) {
+    ctx.body = { code: 403, msg: '您不在该家庭中' }
+    return
+  }
+  if (me.role !== 'creator' && me.role !== 'admin') {
+    ctx.body = { code: 403, msg: '无权修改家庭名称' }
+    return
+  }
+
+  await run(
+    'UPDATE families SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [name.trim(), familyId]
+  )
+
+  ctx.body = { code: 200, msg: '修改成功' }
+})
+
 // PUT /api/family/member
 router.put('/member', async (ctx) => {
   const { openid } = ctx.state.user

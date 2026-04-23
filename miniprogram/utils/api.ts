@@ -85,6 +85,9 @@ export const deleteEvent = (eventId: string) => request('DELETE', `/events/${eve
 export const updateUser = (data: { nickName?: string; avatarUrl?: string }) =>
   request('PUT', '/users', data)
 
+export const updateFamily = (data: { familyId: string; name: string }) =>
+  request('PUT', '/family', data)
+
 export const updateFamilyMember = (data: { familyId: string; nickName?: string; identityTag?: string }) =>
   request('PUT', '/family/member', data)
 

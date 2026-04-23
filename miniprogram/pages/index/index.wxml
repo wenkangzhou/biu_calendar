@@ -35,7 +35,9 @@
           data-date="{{item.date}}">
           <view class="day-content">
             <view class="day-num">{{item.day > 0 ? item.day : ''}}</view>
-            <view wx:if="{{item.day > 0 && item.eventCount > 0}}" class="day-bar" style="background-color: {{item.barColor || '#4A90D9'}};"></view>
+            <view wx:if="{{item.day > 0 && item.dots.length > 0}}" class="dots-row">
+              <view wx:for="{{item.dots}}" wx:for-item="dot" wx:key="*this" class="day-dot" style="background-color: {{dot}};"></view>
+            </view>
             <view wx:else class="day-bar-placeholder"></view>
           </view>
         </view>

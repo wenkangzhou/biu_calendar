@@ -35,9 +35,9 @@
     <view class="family-card">
       <view class="family-title">{{family.name}}</view>
       <view class="invite-box">
-        <view class="invite-label">邀请码</view>
-        <view class="invite-code" bindtap="onCopyCode">{{family.inviteCode}}</view>
-        <view class="invite-tip">24小时内有效，点击复制</view>
+        <view class="invite-label">家庭邀请码</view>
+        <view class="invite-code {{!family.inviteCode ? 'empty' : ''}}" bindtap="onCopyCode">{{family.inviteCode || '生成中...'}}</view>
+        <view class="invite-tip">把邀请码发给家人，让他们在「加入家庭」中输入即可加入</view>
         <button class="btn-small" bindtap="onRefreshCode">刷新邀请码</button>
       </view>
     </view>
@@ -56,10 +56,12 @@
 
     <!-- 编辑表单 -->
     <view wx:if="{{showEdit}}" class="form-card">
-      <view class="form-title">修改我的信息</view>
+      <view class="form-title">修改信息</view>
+      <input wx:if="{{family.creatorOpenid === myOpenid}}" class="form-input" placeholder="家庭名称" value="{{editFamilyName}}" bindinput="onEditFamilyNameChange" />
       <input class="form-input" placeholder="昵称" value="{{editNickName}}" bindinput="onEditNickChange" />
       <input class="form-input" placeholder="身份标签（如：爸爸、妈妈）" value="{{editIdentity}}" bindinput="onEditIdentityChange" />
-      <button class="btn-primary" bindtap="doEditMember">保存</button>
+      <button wx:if="{{family.creatorOpenid === myOpenid && editFamilyName !== family.name}}" class="btn-primary" bindtap="doEditFamilyName">保存家庭名称</button>
+      <button class="btn-primary" bindtap="doEditMember">保存个人信息</button>
     </view>
 
     <view class="danger-zone">

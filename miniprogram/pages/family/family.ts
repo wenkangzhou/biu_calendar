@@ -1,4 +1,4 @@
-import { createFamily, joinFamily, getFamily, refreshInviteCode, leaveFamily, getToken, updateFamilyMember } from '../../utils/api'
+import { createFamily, joinFamily, getFamily, refreshInviteCode, leaveFamily, getToken, updateFamily, updateFamilyMember } from '../../utils/api'
 
 const app = getApp<any>()
 
@@ -16,8 +16,10 @@ Page({
     joinIdentity: '其他',
     loading: true,
     showEdit: false,
+    editFamilyName: '',
     editNickName: '',
-    editIdentity: '其他'
+    editIdentity: '其他',
+    myOpenid: ''
   },
 
   async onLoad() {
@@ -80,6 +82,8 @@ Page({
     this.toggleEdit()
   },
 
+  onEditFamilyNameChange(e: any) { this.setData({ editFamilyName: e.detail.value }) },
+
   toggleEdit() {
     const { family } = this.data
     if (!family) return
@@ -97,9 +101,32 @@ Page({
       showEdit: !this.data.showEdit,
       showCreate: false,
       showJoin: false,
+      editFamilyName: family.name || '',
       editNickName: me.nickName || '',
       editIdentity: me.identityTag || '其他'
     })
+  },
+
+  async doEditFamilyName() {
+    const { family, editFamilyName } = this.data
+    if (!family || !editFamilyName.trim()) {
+      wx.showToast({ title: '家庭名称不能为空', icon: 'none' })
+      return
+    }
+    wx.showLoading({ title: '保存中' })
+    try {
+      const res: any = await updateFamily({ familyId: family._id, name: editFamilyName.trim() })
+      if (res.code === 200) {
+        wx.showToast({ title: '保存成功', icon: 'success' })
+        await this.loadFamily()
+      } else {
+        wx.showToast({ title: res.msg || '保存失败', icon: 'none' })
+      }
+    } catch (err: any) {
+      wx.showToast({ title: err.message || '保存失败', icon: 'none' })
+    } finally {
+      wx.hideLoading()
+    }
   },
 
   async doEditMember() {
@@ -213,7 +240,10 @@ Page({
 
   onCopyCode() {
     const { family } = this.data
-    if (!family) return
+    if (!family || !family.inviteCode) {
+      wx.showToast({ title: '邀请码无效', icon: 'none' })
+      return
+    }
     wx.setClipboardData({
       data: family.inviteCode,
       success: () => wx.showToast({ title: '邀请码已复制', icon: 'none' })

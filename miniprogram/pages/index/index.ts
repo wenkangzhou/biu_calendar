@@ -136,15 +136,20 @@ Page({
         const cEnd = new Date(cell.date + 'T23:59:59')
         return s <= cEnd && en >= c
       })
-      // 取第一个日程的成员颜色作为横条色
-      let barColor = ''
-      if (dayEvents.length > 0) {
-        const firstOid = dayEvents[0].creator_openid
-        if (memberMap[firstOid] && memberMap[firstOid].color) {
-          barColor = memberMap[firstOid].color
+      // 收集当天所有不同成员的颜色小圆点
+      const seen = new Set<string>()
+      const dots: string[] = []
+      for (const e of dayEvents) {
+        const oid = e.creator_openid
+        if (memberMap[oid] && memberMap[oid].color) {
+          if (!seen.has(oid)) {
+            seen.add(oid)
+            dots.push(memberMap[oid].color)
+            if (dots.length >= 4) break
+          }
         }
       }
-      return { ...cell, barColor, eventCount: dayEvents.length }
+      return { ...cell, dots, eventCount: dayEvents.length }
     })
     this.setData({ calendarDays: updatedDays })
   },
