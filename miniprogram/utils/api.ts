@@ -2,8 +2,8 @@
  * HTTP API 封装（替代云开发）
  */
 
-// const API_BASE = 'http://localhost:3000/api' // 本地
-const API_BASE = 'https://biu-api.yiquwei.com/api' // 线上
+const API_BASE = 'http://localhost:3000/api' // 本地
+// const API_BASE = 'https://biu-api.yiquwei.com/api' // 线上
 
 function getToken(): string {
   return wx.getStorageSync('token') || ''
