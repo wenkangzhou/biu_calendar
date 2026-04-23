@@ -25,7 +25,16 @@ Page({
   onLoad() {
     const user = app.globalData.userInfo
     if (user && user.nick_name) {
-      this.setData({ nickName: user.nick_name })
+      this.setData({
+        nickName: user.nick_name,
+        previewName: user.nick_name
+      })
+    }
+    if (user && user.avatar_url) {
+      const idx = EMOJI_LIST.indexOf(user.avatar_url)
+      if (idx !== -1) {
+        this.setData({ selectedIndex: idx })
+      }
     }
   },
 
@@ -43,14 +52,15 @@ Page({
   },
 
   async onSubmit() {
-    const { nickName } = this.data
+    const { nickName, selectedIndex } = this.data
     if (!nickName) {
       wx.showToast({ title: '请输入昵称', icon: 'none' })
       return
     }
     wx.showLoading({ title: '保存中' })
     try {
-      const res: any = await updateUser({ nickName })
+      const avatarUrl = EMOJI_LIST[selectedIndex]
+      const res: any = await updateUser({ nickName, avatarUrl })
       if (res.code === 200) {
         app.globalData.userInfo = res.data
         wx.showToast({ title: '保存成功', icon: 'success' })

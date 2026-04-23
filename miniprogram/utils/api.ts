@@ -76,7 +76,7 @@ export const getMonthlyEvents = (_familyId: string, year: number, month: number)
 export const getDailyEvents = (_familyId: string, date: string) =>
   request('GET', `/events?date=${date}`)
 
-export const getEventStats = () => request('GET', '/events/stats')
+export const getEventStats = () => request('GET', '/events?stats=1')
 
 export const getEvent = (eventId: string) => request('GET', `/events/${eventId}`)
 export const createEvent = (data: any) => request('POST', '/events', data)
