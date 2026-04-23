@@ -73,6 +73,14 @@
     <textarea class="form-textarea" placeholder="备注信息" value="{{remark}}" bindinput="onRemarkChange" />
   </view>
 
+  <view class="form-group">
+    <view class="form-label">
+      <text>日程提醒</text>
+      <switch checked="{{reminderEnabled}}" bindchange="onReminderChange" />
+    </view>
+    <view class="form-tip" wx:if="{{reminderEnabled}}">提醒将在日程开始前推送</view>
+  </view>
+
   <view class="btn-group">
     <button class="btn-primary" bindtap="onSubmit">{{isEdit ? '保存' : '创建'}}</button>
     <button wx:if="{{isEdit}}" class="btn-danger" bindtap="onDelete">删除日程</button>

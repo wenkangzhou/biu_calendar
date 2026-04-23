@@ -164,12 +164,12 @@ router.post('/', async (ctx) => {
     return
   }
 
-  const { title, type, participants, isAllDay, startTime, endTime, location, remark } = data
+  const { title, type, participants, isAllDay, startTime, endTime, location, remark, reminderEnabled } = data
 
   const result = await run(
     `INSERT INTO events
-    (family_id, creator_openid, title, type, participants, is_all_day, start_time, end_time, location, remark, visibility)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    (family_id, creator_openid, title, type, participants, is_all_day, start_time, end_time, location, remark, visibility, reminders)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       family.id,
       openid,
@@ -181,7 +181,8 @@ router.post('/', async (ctx) => {
       new Date(endTime).toISOString(),
       location || '',
       remark || '',
-      (type === 'family' ? 'family' : 'private')
+      (type === 'family' ? 'family' : 'private'),
+      JSON.stringify({ enabled: !!reminderEnabled })
     ]
   )
 
@@ -215,12 +216,17 @@ router.put('/:id', async (ctx) => {
     return
   }
 
-  const allowed = ['title', 'type', 'participants', 'isAllDay', 'startTime', 'endTime', 'location', 'remark', 'isDone', 'visibility']
+  const allowed = ['title', 'type', 'participants', 'isAllDay', 'startTime', 'endTime', 'location', 'remark', 'isDone', 'visibility', 'reminderEnabled']
   const sets = []
   const vals = []
 
   for (const key of allowed) {
     if (data[key] !== undefined) {
+      if (key === 'reminderEnabled') {
+        sets.push('reminders = ?')
+        vals.push(JSON.stringify({ enabled: !!data[key] }))
+        continue
+      }
       let dbKey = key.replace(/[A-Z]/g, m => '_' + m.toLowerCase())
       if (dbKey === 'is_all_day' || dbKey === 'is_done') {
         sets.push(`${dbKey} = ?`)

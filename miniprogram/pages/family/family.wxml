@@ -61,7 +61,6 @@
     <view wx:if="{{showEdit}}" class="form-card">
       <view class="form-title">修改信息</view>
       <input wx:if="{{family.creatorOpenid === myOpenid}}" class="form-input" placeholder="家庭名称" value="{{editFamilyName}}" bindinput="onEditFamilyNameChange" />
-      <input class="form-input" placeholder="昵称" value="{{editNickName}}" bindinput="onEditNickChange" />
       <input class="form-input" placeholder="身份标签（如：爸爸、妈妈）" value="{{editIdentity}}" bindinput="onEditIdentityChange" />
       <button wx:if="{{family.creatorOpenid === myOpenid && editFamilyName !== family.name}}" class="btn-primary" bindtap="doEditFamilyName">保存家庭名称</button>
       <button class="btn-primary" bindtap="doEditMember">保存个人信息</button>

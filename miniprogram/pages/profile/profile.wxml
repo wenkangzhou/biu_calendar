@@ -2,7 +2,7 @@
   <!-- 个人信息卡片 -->
   <view class="profile-card">
     <view class="profile-main" bindtap="onEditProfile">
-      <view class="profile-avatar" style="background-color: {{user && user.avatar_url ? '#7DD3C0' : '#ddd'}};">
+      <view class="profile-avatar" style="background-color: {{myColor}};">
         <text wx:if="{{!user || !user.nick_name}}">👤</text>
         <text wx:elif="{{user.avatar_url}}">{{user.avatar_url}}</text>
         <text wx:else>{{user.nick_name[0]}}</text>

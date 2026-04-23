@@ -8,7 +8,7 @@ router.use(authMiddleware())
 // PUT /api/users 更新当前用户信息
 router.put('/', async (ctx) => {
   const { openid } = ctx.state.user
-  const { nickName, avatarUrl } = ctx.request.body
+  const { nickName, avatarUrl, subscribed } = ctx.request.body
 
   const user = await get('SELECT * FROM users WHERE openid = ?', [openid])
   if (!user) {
@@ -26,6 +26,10 @@ router.put('/', async (ctx) => {
   if (avatarUrl !== undefined) {
     updates.push('avatar_url = ?')
     vals.push(avatarUrl)
+  }
+  if (subscribed !== undefined) {
+    updates.push('subscribed = ?')
+    vals.push(subscribed ? 1 : 0)
   }
 
   if (updates.length === 0) {

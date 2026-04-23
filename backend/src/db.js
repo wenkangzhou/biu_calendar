@@ -58,11 +58,19 @@ function initTables() {
         return
       }
       // 兼容旧数据库：添加可能缺失的字段
+      let pending = 2
+      const done = () => { if (--pending === 0) resolve() }
       db.run(`ALTER TABLE users ADD COLUMN avatar_url TEXT DEFAULT ''`, (err2) => {
         if (err2 && !err2.message.includes('duplicate column name')) {
-          console.warn('添加 avatar_url 字段失败（可能已存在）', err2.message)
+          console.warn('添加 avatar_url 字段失败', err2.message)
         }
-        resolve()
+        done()
+      })
+      db.run(`ALTER TABLE users ADD COLUMN subscribed INTEGER DEFAULT 0`, (err3) => {
+        if (err3 && !err3.message.includes('duplicate column name')) {
+          console.warn('添加 subscribed 字段失败', err3.message)
+        }
+        done()
       })
     })
   })

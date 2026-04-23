@@ -19,7 +19,8 @@ Page({
     endDate: '',
     endTime: '',
     location: '',
-    remark: ''
+    remark: '',
+    reminderEnabled: false
   },
 
   async onLoad(options: any) {
@@ -89,6 +90,7 @@ Page({
   onEndTimeChange(e: any) { this.setData({ endTime: e.detail.value }) },
   onLocationChange(e: any) { this.setData({ location: e.detail.value }) },
   onRemarkChange(e: any) { this.setData({ remark: e.detail.value }) },
+  onReminderChange(e: any) { this.setData({ reminderEnabled: e.detail.value }) },
 
   onParticipantToggle(e: any) {
     const openid = e.currentTarget.dataset.id
@@ -102,7 +104,7 @@ Page({
   },
 
   async onSubmit() {
-    const { isEdit, eventId, familyId, title, type, participants, isAllDay, startDate, startTime, endDate, endTime, location, remark } = this.data
+    const { isEdit, eventId, familyId, title, type, participants, isAllDay, startDate, startTime, endDate, endTime, location, remark, reminderEnabled } = this.data
 
     if (!title.trim()) {
       wx.showToast({ title: '请输入标题', icon: 'none' })
@@ -136,7 +138,8 @@ Page({
       startTime: start.toISOString(),
       endTime: end.toISOString(),
       location,
-      remark
+      remark,
+      reminderEnabled
     }
 
     wx.showLoading({ title: isEdit ? '保存中' : '创建中' })

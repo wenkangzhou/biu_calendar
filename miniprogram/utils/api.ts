@@ -84,7 +84,7 @@ export const updateEvent = (eventId: string, data: any) => request('PUT', `/even
 export const deleteEvent = (eventId: string) => request('DELETE', `/events/${eventId}`)
 
 // 用户相关
-export const updateUser = (data: { nickName?: string; avatarUrl?: string }) =>
+export const updateUser = (data: { nickName?: string; avatarUrl?: string; subscribed?: boolean }) =>
   request('PUT', '/users', data)
 
 export const updateFamily = (data: { familyId: string; name: string }) =>

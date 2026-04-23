@@ -107,7 +107,6 @@ Page({
       showCreate: false,
       showJoin: false,
       editFamilyName: family.name || '',
-      editNickName: me.nickName || '',
       editIdentity: me.identityTag || '其他'
     })
   },
@@ -135,17 +134,12 @@ Page({
   },
 
   async doEditMember() {
-    const { family, editNickName, editIdentity } = this.data
+    const { family, editIdentity } = this.data
     if (!family) return
-    if (!editNickName.trim()) {
-      wx.showToast({ title: '昵称不能为空', icon: 'none' })
-      return
-    }
     wx.showLoading({ title: '保存中' })
     try {
       const res: any = await updateFamilyMember({
         familyId: family._id,
-        nickName: editNickName.trim(),
         identityTag: editIdentity
       })
       if (res.code === 200) {
