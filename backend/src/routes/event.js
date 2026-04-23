@@ -1,6 +1,7 @@
 const Router = require('koa-router')
 const { all, get, run } = require('../db')
 const { authMiddleware } = require('../middleware/auth')
+const { sendSubscribeMessage } = require('../utils/wx')
 
 const router = new Router({ prefix: '/api/events' })
 router.use(authMiddleware())
@@ -187,6 +188,26 @@ router.post('/', async (ctx) => {
   )
 
   const evt = rowToEvent(await get('SELECT * FROM events WHERE id = ?', [result.lastID]))
+
+  // 发送订阅消息提醒
+  if (reminderEnabled) {
+    try {
+      const creator = await get('SELECT * FROM users WHERE openid = ?', [openid])
+      if (creator && creator.subscribed) {
+        const startStr = new Date(startTime).toISOString().slice(0, 10)
+        const endStr = new Date(endTime).toISOString().slice(0, 10)
+        await sendSubscribeMessage(openid, 'NUejq84LuZ3CzlnoKnaDN2F-9ncwNcPsJ7LN40YOTEQ', '/pages/index/index', {
+          thing3: { value: title.trim().slice(0, 20) },
+          date2: { value: startStr },
+          name1: { value: creator.nick_name || '家人' },
+          date6: { value: endStr }
+        })
+      }
+    } catch (err) {
+      console.error('发送订阅消息失败', err.message)
+    }
+  }
+
   ctx.body = { code: 200, data: evt }
 })
 
