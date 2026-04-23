@@ -149,6 +149,7 @@ page {
     padding: 20rpx 0;
     border-bottom: 1rpx solid #f5f5f5;
     &:last-child { border-bottom: none; }
+    &.editable:active { background: #f9f9f9; }
     .member-avatar {
       width: 80rpx;
       height: 80rpx;
@@ -161,6 +162,7 @@ page {
       margin-right: 20rpx;
     }
     .member-info {
+      flex: 1;
       .member-name {
         font-size: 30rpx;
         color: #333;
@@ -171,6 +173,10 @@ page {
         color: #999;
         margin-top: 6rpx;
       }
+    }
+    .edit-hint {
+      font-size: 24rpx;
+      color: #4A90D9;
     }
   }
 }

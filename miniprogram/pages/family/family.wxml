@@ -44,14 +44,14 @@
 
     <view class="member-card">
       <view class="card-title">家庭成员（{{family.members.length}}人）</view>
-      <view wx:for="{{family.members}}" wx:key="openid" class="member-item">
+      <view wx:for="{{family.members}}" wx:key="openid" class="member-item {{item.openid === myOpenid ? 'editable' : ''}}" bindtap="onMemberTap" data-openid="{{item.openid}}">
         <view class="member-avatar" style="background-color: {{item.color}};">{{item.nickName[0]}}</view>
         <view class="member-info">
           <view class="member-name">{{item.nickName}}</view>
           <view class="member-tag">{{item.identityTag}} · {{item.role === 'creator' ? '创建者' : item.role === 'admin' ? '管理员' : '成员'}}</view>
         </view>
+        <view wx:if="{{item.openid === myOpenid}}" class="edit-hint">点击修改 ›</view>
       </view>
-      <button class="btn-secondary" bindtap="toggleEdit">修改我的信息</button>
     </view>
 
     <!-- 编辑表单 -->

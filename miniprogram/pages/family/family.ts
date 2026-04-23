@@ -45,7 +45,8 @@ Page({
         this.setData({
           family: res.data,
           hasFamily: true,
-          loading: false
+          loading: false,
+          myOpenid: app.globalData.openid
         })
       } else {
         this.setData({ hasFamily: false, loading: false })
@@ -72,12 +73,25 @@ Page({
     this.setData({ showJoin: !this.data.showJoin, showCreate: false, showEdit: false })
   },
 
+  onMemberTap(e: any) {
+    const openid = e.currentTarget.dataset.openid
+    if (openid !== app.globalData.openid) return
+    this.toggleEdit()
+  },
+
   toggleEdit() {
     const { family } = this.data
     if (!family) return
     const openid = app.globalData.openid
+    if (!openid) {
+      wx.showToast({ title: '用户信息异常', icon: 'none' })
+      return
+    }
     const me = family.members.find((m: any) => m.openid === openid)
-    if (!me) return
+    if (!me) {
+      wx.showToast({ title: '未找到成员信息', icon: 'none' })
+      return
+    }
     this.setData({
       showEdit: !this.data.showEdit,
       showCreate: false,
