@@ -1,5 +1,5 @@
 const Router = require('koa-router')
-const { get, run } = require('../db')
+const { all, get, run } = require('../db')
 const { authMiddleware } = require('../middleware/auth')
 
 const router = new Router({ prefix: '/api/users' })

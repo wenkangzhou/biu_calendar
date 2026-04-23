@@ -1,4 +1,4 @@
-import { login, getToken } from './utils/api'
+import { login } from './utils/api'
 
 export interface IAppOption {
   globalData: {
@@ -20,10 +20,8 @@ App<IAppOption>({
   },
 
   onLaunch() {
-    // 如果没有 token，触发登录；有 token 则复用
-    if (!getToken()) {
-      this.loginPromise = this.initLogin!()
-    }
+    // 总是执行登录，确保 openid / userInfo / family 都就位
+    this.loginPromise = this.initLogin!()
   },
 
   async initLogin() {

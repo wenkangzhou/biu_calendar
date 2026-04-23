@@ -34,6 +34,17 @@ router.get('/', async (ctx) => {
   for (const row of rows) {
     const members = JSON.parse(row.members || '[]')
     if (members.some(m => m.openid === openid)) {
+      // 兼容旧数据：如果没有邀请码，自动生成一个
+      if (!row.invite_code) {
+        const newCode = generateInviteCode()
+        const newExpire = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        await run(
+          'UPDATE families SET invite_code = ?, invite_code_expire_at = ? WHERE id = ?',
+          [newCode, newExpire, row.id]
+        )
+        row.invite_code = newCode
+        row.invite_code_expire_at = newExpire
+      }
       family = rowToFamily(row)
       break
     }
