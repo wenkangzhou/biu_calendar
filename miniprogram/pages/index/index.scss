@@ -279,7 +279,7 @@ page {
 .fab {
   position: fixed;
   right: 40rpx;
-  bottom: calc(60rpx + env(safe-area-inset-bottom));
+  bottom: 180rpx;
   width: 100rpx;
   height: 100rpx;
   background: #4A90D9;
@@ -289,5 +289,5 @@ page {
   text-align: center;
   border-radius: 50%;
   box-shadow: 0 8rpx 30rpx rgba(74, 144, 217, 0.4);
-  z-index: 100;
+  z-index: 9999;
 }

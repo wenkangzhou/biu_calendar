@@ -1,3 +1,5 @@
+import { updateUser } from '../../utils/api'
+
 const app = getApp<any>()
 
 const EMOJI_LIST = [
@@ -22,7 +24,7 @@ Page({
 
   onLoad() {
     const user = app.globalData.userInfo
-    if (user?.nick_name) {
+    if (user && user.nick_name) {
       this.setData({ nickName: user.nick_name })
     }
   },
@@ -46,9 +48,21 @@ Page({
       wx.showToast({ title: '请输入昵称', icon: 'none' })
       return
     }
-    // TODO: 调用后端更新用户信息
-    wx.showToast({ title: '保存成功', icon: 'success' })
-    setTimeout(() => wx.navigateBack(), 800)
+    wx.showLoading({ title: '保存中' })
+    try {
+      const res: any = await updateUser({ nickName })
+      if (res.code === 200) {
+        app.globalData.userInfo = res.data
+        wx.showToast({ title: '保存成功', icon: 'success' })
+        setTimeout(() => wx.navigateBack(), 800)
+      } else {
+        wx.showToast({ title: res.msg || '保存失败', icon: 'none' })
+      }
+    } catch (err: any) {
+      wx.showToast({ title: err.message || '保存失败', icon: 'none' })
+    } finally {
+      wx.hideLoading()
+    }
   },
 
   onSkip() {

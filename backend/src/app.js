@@ -7,6 +7,7 @@ const cors = require('koa2-cors')
 const authRouter = require('./routes/auth')
 const familyRouter = require('./routes/family')
 const eventRouter = require('./routes/event')
+const userRouter = require('./routes/user')
 
 const app = new Koa()
 const PORT = process.env.PORT || 3000
@@ -41,6 +42,7 @@ app.use(async (ctx, next) => {
 app.use(authRouter.routes()).use(authRouter.allowedMethods())
 app.use(familyRouter.routes()).use(familyRouter.allowedMethods())
 app.use(eventRouter.routes()).use(eventRouter.allowedMethods())
+app.use(userRouter.routes()).use(userRouter.allowedMethods())
 
 // 404
 app.use(async (ctx) => {

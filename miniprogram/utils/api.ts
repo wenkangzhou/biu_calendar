@@ -81,5 +81,9 @@ export const createEvent = (data: any) => request('POST', '/events', data)
 export const updateEvent = (eventId: string, data: any) => request('PUT', `/events/${eventId}`, data)
 export const deleteEvent = (eventId: string) => request('DELETE', `/events/${eventId}`)
 
+// 用户相关
+export const updateUser = (data: { nickName?: string; avatarUrl?: string }) =>
+  request('PUT', '/users', data)
+
 // 导出 token 工具
 export { getToken, saveToken, removeToken }
