@@ -61,7 +61,7 @@
       </view>
 
       <view wx:for="{{dailyEvents}}" wx:key="_id" class="event-item" bindtap="onEditEvent" data-id="{{item._id}}">
-        <view class="event-bar" style="background-color: {{getMemberColor(item.creator_openid)}};"></view>
+        <view class="event-avatar" style="background-color: {{getMemberColor(item.creator_openid)}};">{{getMemberName(item.creator_openid)[0]}}</view>
         <view class="event-body">
           <view class="event-title">{{item.title}}</view>
           <view class="event-meta">

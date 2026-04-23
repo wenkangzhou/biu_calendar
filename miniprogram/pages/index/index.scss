@@ -228,6 +228,18 @@ page {
   padding: 20rpx 0;
   border-bottom: 1rpx solid #f5f5f5;
   &:last-child { border-bottom: none; }
+  .event-avatar {
+    width: 64rpx;
+    height: 64rpx;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 28rpx;
+    margin-right: 20rpx;
+    flex-shrink: 0;
+  }
   .event-bar {
     width: 8rpx;
     height: 80rpx;

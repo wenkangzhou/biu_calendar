@@ -1,4 +1,4 @@
-import { getFamily, getToken } from '../../utils/api'
+import { getFamily, getToken, getEventStats } from '../../utils/api'
 
 const app = getApp<any>()
 
@@ -42,11 +42,15 @@ Page({
     }
   },
 
-  calcStats() {
-    // TODO: 从后端获取真实统计数据
-    this.setData({
-      stats: { total: 0, today: 0, todo: 0 }
-    })
+  async calcStats() {
+    try {
+      const res: any = await getEventStats()
+      if (res.code === 200) {
+        this.setData({ stats: res.data })
+      }
+    } catch (err) {
+      console.error('加载统计数据失败', err)
+    }
   },
 
   onEditProfile() {

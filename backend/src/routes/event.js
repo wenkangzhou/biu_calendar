@@ -36,6 +36,43 @@ function rowToEvent(row) {
   }
 }
 
+// GET /api/events/stats
+router.get('/stats', async (ctx) => {
+  const { openid } = ctx.state.user
+  const family = await getFamilyByMember(openid)
+  if (!family) {
+    ctx.body = { code: 404, msg: '未加入任何家庭' }
+    return
+  }
+
+  const todayStart = new Date().toISOString().slice(0, 10) + 'T00:00:00.000Z'
+  const todayEnd = new Date().toISOString().slice(0, 10) + 'T23:59:59.999Z'
+
+  // 总日程数
+  const totalRow = await get('SELECT COUNT(*) as count FROM events WHERE family_id = ?', [family.id])
+  let total = totalRow ? totalRow.count : 0
+
+  // 今日日程数
+  const todayRow = await get(
+    `SELECT COUNT(*) as count FROM events WHERE family_id = ? AND (
+      (start_time >= ? AND start_time <= ?) OR
+      (end_time >= ? AND end_time <= ?) OR
+      (start_time < ? AND end_time > ?)
+    )`,
+    [family.id, todayStart, todayEnd, todayStart, todayEnd, todayStart, todayEnd]
+  )
+  let today = todayRow ? todayRow.count : 0
+
+  // 待办：今天及以后且未完成的日程
+  const todoRow = await get(
+    `SELECT COUNT(*) as count FROM events WHERE family_id = ? AND end_time >= ? AND is_done = 0`,
+    [family.id, todayStart]
+  )
+  let todo = todoRow ? todoRow.count : 0
+
+  ctx.body = { code: 200, data: { total, today, todo } }
+})
+
 // GET /api/events?year=2026&month=4  或 ?date=2026-04-22
 router.get('/', async (ctx) => {
   const { openid } = ctx.state.user
