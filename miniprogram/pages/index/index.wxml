@@ -34,12 +34,12 @@
           bindtap="onSelectDate"
           data-date="{{item.date}}">
           <view class="day-content">
-            <view class="day-num">{{item.day > 0 ? item.day : ''}}</view>
+            <view class="day-num {{item.isHoliday ? 'holiday-num' : ''}} {{item.isWork ? 'work-num' : ''}}">{{item.day > 0 ? item.day : ''}}</view>
+            <view wx:if="{{item.day > 0 && item.lunarText}}" class="lunar-text {{item.isHoliday ? 'holiday' : ''}} {{item.isWork ? 'work' : ''}} {{item.lunarText.length > 2 ? 'small' : ''}}">{{item.lunarText}}</view>
+            <view wx:else class="day-bar-placeholder"></view>
             <view wx:if="{{item.day > 0 && item.dots.length > 0}}" class="dots-row">
               <view wx:for="{{item.dots}}" wx:for-item="dot" wx:key="*this" class="day-dot" style="background-color: {{dot}};"></view>
             </view>
-            <view wx:elif="{{item.day > 0 && item.lunarText}}" class="lunar-text {{item.lunarText.length > 2 ? 'small' : ''}}">{{item.lunarText}}</view>
-            <view wx:else class="day-bar-placeholder"></view>
           </view>
         </view>
       </view>

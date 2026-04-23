@@ -1,6 +1,6 @@
 import { getMonthlyEvents, getDailyEvents, getFamily, getToken } from '../../utils/api'
 
-const { Solar } = require('../../utils/lunar-javascript/index')
+const { Solar, HolidayUtil } = require('../../utils/lunar-javascript/index')
 
 const app = getApp<any>()
 
@@ -127,27 +127,36 @@ Page({
       const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`
       // 计算农历/节假日
       let lunarText = ''
+      let isHoliday = false
+      let isWork = false
       try {
         const solar = Solar.fromYmd(year, month, d)
         const lunar = solar.getLunar()
-        const festivals = solar.getFestivals()
-        const lunarFestivals = lunar.getFestivals()
-        const jieQi = lunar.getJieQi()
-        if (festivals && festivals.length > 0) {
-          lunarText = festivals[0]
-        } else if (lunarFestivals && lunarFestivals.length > 0) {
-          lunarText = lunarFestivals[0]
-        } else if (jieQi) {
-          lunarText = jieQi
-        } else if (lunar.getDay() === 1) {
-          lunarText = lunar.getMonthInChinese() + '月'
+        const holiday = HolidayUtil.getHoliday(year, month, d)
+        if (holiday) {
+          lunarText = holiday.getName() + (holiday.isWork() ? '(班)' : '(休)')
+          isHoliday = !holiday.isWork()
+          isWork = holiday.isWork()
         } else {
-          lunarText = lunar.getDayInChinese()
+          const festivals = solar.getFestivals()
+          const lunarFestivals = lunar.getFestivals()
+          const jieQi = lunar.getJieQi()
+          if (festivals && festivals.length > 0) {
+            lunarText = festivals[0]
+          } else if (lunarFestivals && lunarFestivals.length > 0) {
+            lunarText = lunarFestivals[0]
+          } else if (jieQi) {
+            lunarText = jieQi
+          } else if (lunar.getDay() === 1) {
+            lunarText = lunar.getMonthInChinese() + '月'
+          } else {
+            lunarText = lunar.getDayInChinese()
+          }
         }
       } catch (e) {
         // 忽略农历计算错误
       }
-      days.push({ day: d, date: dateStr, dots: [], lunarText })
+      days.push({ day: d, date: dateStr, dots: [], lunarText, isHoliday, isWork })
     }
     this.setData({ calendarDays: days })
   },
