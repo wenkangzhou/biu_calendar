@@ -62,10 +62,10 @@
   <view class="settings-list">
     <view class="setting-item" bindtap="onSubscribe">
       <view class="setting-left">
-        <text class="setting-title">订阅日程提醒</text>
+        <text class="setting-title">日程提醒说明</text>
       </view>
       <view class="setting-right">
-        <text class="setting-status">点击订阅</text>
+        <text class="setting-status">创建日程时授权</text>
         <text class="setting-arrow">›</text>
       </view>
     </view>

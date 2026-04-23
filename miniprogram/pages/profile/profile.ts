@@ -1,5 +1,4 @@
-import { getFamily, getToken, getEventStats, updateUser } from '../../utils/api'
-import { SUBSCRIBE_TMPL_ID } from '../../config'
+import { getFamily, getToken, getEventStats } from '../../utils/api'
 
 const app = getApp<any>()
 
@@ -81,53 +80,12 @@ Page({
     })
   },
 
-  async onSubscribe() {
-    if (!SUBSCRIBE_TMPL_ID) {
-      wx.showModal({
-        title: '提示',
-        content: '订阅消息需要在微信公众平台申请模板ID后使用。请先登录微信公众平台申请一次性订阅消息模板，然后将模板ID填入 miniprogram/config.ts 中。',
-        showCancel: false
-      })
-      return
-    }
-
-    try {
-      const res: any = await new Promise((resolve, reject) => {
-        wx.requestSubscribeMessage({
-          tmplIds: [SUBSCRIBE_TMPL_ID],
-          success: resolve,
-          fail: reject
-        })
-      })
-
-      const status = res[SUBSCRIBE_TMPL_ID]
-      if (status === 'accept') {
-        // 用户同意，同步到后端
-        try {
-          await updateUser({ subscribed: true })
-        } catch (e) { /* 忽略后端同步错误 */ }
-        wx.setStorageSync('subscribed', true)
-        wx.showToast({ title: '订阅成功', icon: 'success' })
-      } else if (status === 'reject') {
-        wx.showToast({ title: '你已取消订阅', icon: 'none' })
-      } else if (status === 'ban') {
-        wx.showModal({
-          title: '订阅被禁用',
-          content: '请前往小程序设置页面打开订阅消息权限',
-          showCancel: false
-        })
-      }
-    } catch (err: any) {
-      if (err.errCode === 20001) {
-        wx.showModal({
-          title: '订阅失败',
-          content: '请先在设置中打开订阅消息权限',
-          showCancel: false
-        })
-      } else {
-        wx.showToast({ title: err.errMsg || '订阅失败', icon: 'none' })
-      }
-    }
+  onSubscribe() {
+    wx.showModal({
+      title: '日程提醒',
+      content: '创建日程时开启「日程提醒」开关，保存时会自动请求微信授权。每次授权仅对应当前日程的一条提醒消息。',
+      showCancel: false
+    })
   },
 
   onShareAppMessage() {

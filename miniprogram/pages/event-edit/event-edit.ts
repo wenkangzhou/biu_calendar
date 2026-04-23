@@ -1,4 +1,5 @@
 import { createEvent, updateEvent, getEvent, deleteEvent, getToken } from '../../utils/api'
+import { SUBSCRIBE_TMPL_ID } from '../../config'
 
 const app = getApp<any>()
 
@@ -54,6 +55,7 @@ Page({
         const e = res.data
         const start = new Date(e.start_time)
         const end = new Date(e.end_time)
+        const reminders = e.reminders ? (typeof e.reminders === 'string' ? JSON.parse(e.reminders) : e.reminders) : { enabled: false }
         this.setData({
           title: e.title,
           type: e.type,
@@ -64,7 +66,8 @@ Page({
           endDate: this.formatDate(end),
           endTime: this.formatTime(end),
           location: e.location || '',
-          remark: e.remark || ''
+          remark: e.remark || '',
+          reminderEnabled: reminders.enabled || false
         })
       }
     } catch (err) {
@@ -109,6 +112,24 @@ Page({
     if (!title.trim()) {
       wx.showToast({ title: '请输入标题', icon: 'none' })
       return
+    }
+
+    // 如果开启了提醒，先请求订阅授权（一次性订阅：每个日程需单独授权）
+    if (reminderEnabled) {
+      try {
+        const authRes: any = await new Promise((resolve, reject) => {
+          wx.requestSubscribeMessage({
+            tmplIds: [SUBSCRIBE_TMPL_ID],
+            success: resolve,
+            fail: reject
+          })
+        })
+        if (authRes[SUBSCRIBE_TMPL_ID] !== 'accept') {
+          wx.showToast({ title: '未获得提醒授权', icon: 'none' })
+        }
+      } catch (err: any) {
+        wx.showToast({ title: '提醒授权失败', icon: 'none' })
+      }
     }
 
     // 使用本地时间构造Date，再转为UTC存储
