@@ -3,8 +3,8 @@
   <view class="profile-card">
     <view class="profile-main" bindtap="onEditProfile">
       <view class="profile-avatar">
-        <text wx:if="{{!user?.nick_name}}">👤</text>
-        <text wx:else>{{user.nick_name[0]}}</text>
+        <text wx:if="{{!user || !user.nick_name}}">👤</text>
+        <text wx:elif="{{user.nick_name}}">{{user.nick_name[0]}}</text>
       </view>
       <view class="profile-info">
         <view class="profile-name">
@@ -30,7 +30,7 @@
   </view>
 
   <!-- 提示卡片 -->
-  <view wx:if="{{!user?.nick_name}}" class="notice-card" bindtap="onEditProfile">
+  <view wx:if="{{!user || !user.nick_name}}" class="notice-card" bindtap="onEditProfile">
     <view class="notice-icon">ℹ️</view>
     <view class="notice-body">
       <view class="notice-title">请先设置你的昵称和头像</view>
