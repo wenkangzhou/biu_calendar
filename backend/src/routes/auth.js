@@ -1,6 +1,6 @@
 const Router = require('koa-router')
 const axios = require('axios')
-const db = require('../db')
+const { all, get, run } = require('../db')
 const { signToken } = require('../middleware/auth')
 
 const router = new Router({ prefix: '/api/auth' })
@@ -47,26 +47,29 @@ router.post('/login', async (ctx) => {
   }
 
   // 查找或创建用户
-  let user = db.prepare('SELECT * FROM users WHERE openid = ?').get(openid)
+  let user = await get('SELECT * FROM users WHERE openid = ?', [openid])
 
   if (!user) {
-    const result = db.prepare(
-      'INSERT INTO users (openid, nick_name, avatar_url) VALUES (?, ?, ?)'
-    ).run(openid, nickName || '', avatarUrl || '')
+    const result = await run(
+      'INSERT INTO users (openid, nick_name, avatar_url) VALUES (?, ?, ?)',
+      [openid, nickName || '', avatarUrl || '']
+    )
     user = {
-      id: result.lastInsertRowid,
+      id: result.lastID,
       openid,
       nick_name: nickName || '',
       avatar_url: avatarUrl || ''
     }
   } else if (nickName || avatarUrl) {
-    db.prepare('UPDATE users SET nick_name = COALESCE(?, nick_name), avatar_url = COALESCE(?, avatar_url), updated_at = CURRENT_TIMESTAMP WHERE openid = ?')
-      .run(nickName || null, avatarUrl || null, openid)
-    user = db.prepare('SELECT * FROM users WHERE openid = ?').get(openid)
+    await run(
+      'UPDATE users SET nick_name = COALESCE(?, nick_name), avatar_url = COALESCE(?, avatar_url), updated_at = CURRENT_TIMESTAMP WHERE openid = ?',
+      [nickName || null, avatarUrl || null, openid]
+    )
+    user = await get('SELECT * FROM users WHERE openid = ?', [openid])
   }
 
   // 查找用户所在家庭
-  const allFamilies = db.prepare('SELECT * FROM families').all()
+  const allFamilies = await all('SELECT * FROM families')
   let family = null
   for (const f of allFamilies) {
     const members = JSON.parse(f.members || '[]')

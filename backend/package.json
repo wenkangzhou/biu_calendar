@@ -15,7 +15,7 @@
     "koa-bodyparser": "^4.4.1",
     "koa-router": "^12.0.1",
     "koa2-cors": "^2.0.6",
-    "better-sqlite3": "^9.4.3",
+    "sqlite3": "^5.1.7",
     "jsonwebtoken": "^9.0.2",
     "axios": "^1.6.8",
     "dotenv": "^16.4.5"

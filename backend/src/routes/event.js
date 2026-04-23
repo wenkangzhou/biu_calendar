@@ -1,5 +1,5 @@
 const Router = require('koa-router')
-const db = require('../db')
+const { all, get, run } = require('../db')
 const { authMiddleware } = require('../middleware/auth')
 
 const router = new Router({ prefix: '/api/events' })
@@ -13,9 +13,9 @@ function validateEvent(data) {
   return null
 }
 
-function getFamilyByMember(openid) {
-  const all = db.prepare('SELECT * FROM families').all()
-  for (const row of all) {
+async function getFamilyByMember(openid) {
+  const rows = await all('SELECT * FROM families')
+  for (const row of rows) {
     const members = JSON.parse(row.members || '[]')
     if (members.some(m => m.openid === openid)) {
       return { ...row, members }
@@ -41,7 +41,7 @@ router.get('/', async (ctx) => {
   const { openid } = ctx.state.user
   const { year, month, date } = ctx.query
 
-  const family = getFamilyByMember(openid)
+  const family = await getFamilyByMember(openid)
   if (!family) {
     ctx.body = { code: 404, msg: '未加入任何家庭' }
     return
@@ -53,23 +53,25 @@ router.get('/', async (ctx) => {
     const m = parseInt(month)
     const start = new Date(y, m - 1, 1, 0, 0, 0).toISOString()
     const end = new Date(y, m, 1, 0, 0, 0).toISOString()
-    rows = db.prepare(
+    rows = await all(
       `SELECT * FROM events WHERE family_id = ? AND (
         (start_time >= ? AND start_time < ?) OR
         (end_time >= ? AND end_time < ?) OR
         (start_time < ? AND end_time >= ?)
-      ) ORDER BY start_time ASC`
-    ).all(family.id, start, end, start, end, start, end)
+      ) ORDER BY start_time ASC`,
+      [family.id, start, end, start, end, start, end]
+    )
   } else if (date) {
     const dayStart = new Date(date + 'T00:00:00').toISOString()
     const dayEnd = new Date(date + 'T23:59:59').toISOString()
-    rows = db.prepare(
+    rows = await all(
       `SELECT * FROM events WHERE family_id = ? AND (
         (start_time >= ? AND start_time <= ?) OR
         (end_time >= ? AND end_time <= ?) OR
         (start_time < ? AND end_time > ?)
-      ) ORDER BY start_time ASC`
-    ).all(family.id, dayStart, dayEnd, dayStart, dayEnd, dayStart, dayEnd)
+      ) ORDER BY start_time ASC`,
+      [family.id, dayStart, dayEnd, dayStart, dayEnd, dayStart, dayEnd]
+    )
   } else {
     ctx.body = { code: 400, msg: '缺少查询参数' }
     return
@@ -92,13 +94,13 @@ router.get('/:id', async (ctx) => {
   const { openid } = ctx.state.user
   const id = parseInt(ctx.params.id)
 
-  const row = db.prepare('SELECT * FROM events WHERE id = ?').get(id)
+  const row = await get('SELECT * FROM events WHERE id = ?', [id])
   if (!row) {
     ctx.body = { code: 404, msg: '日程不存在' }
     return
   }
 
-  const family = getFamilyByMember(openid)
+  const family = await getFamilyByMember(openid)
   if (!family || family.id !== row.family_id) {
     ctx.body = { code: 403, msg: '无权访问' }
     return
@@ -124,7 +126,7 @@ router.post('/', async (ctx) => {
     return
   }
 
-  const family = getFamilyByMember(openid)
+  const family = await getFamilyByMember(openid)
   if (!family) {
     ctx.body = { code: 404, msg: '未加入任何家庭' }
     return
@@ -132,25 +134,26 @@ router.post('/', async (ctx) => {
 
   const { title, type, participants, isAllDay, startTime, endTime, location, remark } = data
 
-  const result = db.prepare(
+  const result = await run(
     `INSERT INTO events
     (family_id, creator_openid, title, type, participants, is_all_day, start_time, end_time, location, remark, visibility)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  ).run(
-    family.id,
-    openid,
-    title.trim(),
-    type || 'personal',
-    JSON.stringify(participants || [openid]),
-    isAllDay ? 1 : 0,
-    new Date(startTime).toISOString(),
-    new Date(endTime).toISOString(),
-    location || '',
-    remark || '',
-    (type === 'family' ? 'family' : 'private')
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      family.id,
+      openid,
+      title.trim(),
+      type || 'personal',
+      JSON.stringify(participants || [openid]),
+      isAllDay ? 1 : 0,
+      new Date(startTime).toISOString(),
+      new Date(endTime).toISOString(),
+      location || '',
+      remark || '',
+      (type === 'family' ? 'family' : 'private')
+    ]
   )
 
-  const evt = rowToEvent(db.prepare('SELECT * FROM events WHERE id = ?').get(result.lastInsertRowid))
+  const evt = rowToEvent(await get('SELECT * FROM events WHERE id = ?', [result.lastID]))
   ctx.body = { code: 200, data: evt }
 })
 
@@ -160,13 +163,13 @@ router.put('/:id', async (ctx) => {
   const id = parseInt(ctx.params.id)
   const data = ctx.request.body
 
-  const row = db.prepare('SELECT * FROM events WHERE id = ?').get(id)
+  const row = await get('SELECT * FROM events WHERE id = ?', [id])
   if (!row) {
     ctx.body = { code: 404, msg: '日程不存在' }
     return
   }
 
-  const family = getFamilyByMember(openid)
+  const family = await getFamilyByMember(openid)
   if (!family || family.id !== row.family_id) {
     ctx.body = { code: 403, msg: '无权访问' }
     return
@@ -211,7 +214,7 @@ router.put('/:id', async (ctx) => {
   sets.push('updated_at = CURRENT_TIMESTAMP')
   vals.push(id)
 
-  db.prepare(`UPDATE events SET ${sets.join(', ')} WHERE id = ?`).run(...vals)
+  await run(`UPDATE events SET ${sets.join(', ')} WHERE id = ?`, vals)
   ctx.body = { code: 200, msg: '更新成功' }
 })
 
@@ -220,13 +223,13 @@ router.delete('/:id', async (ctx) => {
   const { openid } = ctx.state.user
   const id = parseInt(ctx.params.id)
 
-  const row = db.prepare('SELECT * FROM events WHERE id = ?').get(id)
+  const row = await get('SELECT * FROM events WHERE id = ?', [id])
   if (!row) {
     ctx.body = { code: 404, msg: '日程不存在' }
     return
   }
 
-  const family = getFamilyByMember(openid)
+  const family = await getFamilyByMember(openid)
   if (!family || family.id !== row.family_id) {
     ctx.body = { code: 403, msg: '无权访问' }
     return
@@ -240,7 +243,7 @@ router.delete('/:id', async (ctx) => {
     return
   }
 
-  db.prepare('DELETE FROM events WHERE id = ?').run(id)
+  await run('DELETE FROM events WHERE id = ?', [id])
   ctx.body = { code: 200, msg: '删除成功' }
 })
 

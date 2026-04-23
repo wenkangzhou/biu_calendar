@@ -1,5 +1,5 @@
 const Router = require('koa-router')
-const db = require('../db')
+const { all, get, run } = require('../db')
 const { authMiddleware } = require('../middleware/auth')
 
 const router = new Router({ prefix: '/api/family' })
@@ -26,9 +26,9 @@ function rowToFamily(row) {
 // GET /api/family
 router.get('/', async (ctx) => {
   const { openid } = ctx.state.user
-  const all = db.prepare('SELECT * FROM families').all()
+  const rows = await all('SELECT * FROM families')
   let family = null
-  for (const row of all) {
+  for (const row of rows) {
     const members = JSON.parse(row.members || '[]')
     if (members.some(m => m.openid === openid)) {
       family = rowToFamily(row)
@@ -55,8 +55,8 @@ router.post('/', async (ctx) => {
   }
 
   // 检查是否已有家庭
-  const all = db.prepare('SELECT * FROM families').all()
-  for (const row of all) {
+  const allRows = await all('SELECT * FROM families')
+  for (const row of allRows) {
     const members = JSON.parse(row.members || '[]')
     if (members.some(m => m.openid === openid)) {
       ctx.body = { code: 409, msg: '您已加入一个家庭，请先退出' }
@@ -75,11 +75,12 @@ router.post('/', async (ctx) => {
     joinedAt: new Date().toISOString()
   }])
 
-  const result = db.prepare(
-    'INSERT INTO families (name, creator_openid, members, invite_code, invite_code_expire_at) VALUES (?, ?, ?, ?, ?)'
-  ).run(name, openid, members, inviteCode, expireAt)
+  const result = await run(
+    'INSERT INTO families (name, creator_openid, members, invite_code, invite_code_expire_at) VALUES (?, ?, ?, ?, ?)',
+    [name, openid, members, inviteCode, expireAt]
+  )
 
-  const family = rowToFamily(db.prepare('SELECT * FROM families WHERE id = ?').get(result.lastInsertRowid))
+  const family = rowToFamily(await get('SELECT * FROM families WHERE id = ?', [result.lastID]))
   ctx.body = { code: 200, data: family }
 })
 
@@ -93,7 +94,7 @@ router.post('/join', async (ctx) => {
     return
   }
 
-  const row = db.prepare('SELECT * FROM families WHERE invite_code = ?').get(inviteCode)
+  const row = await get('SELECT * FROM families WHERE invite_code = ?', [inviteCode])
   if (!row) {
     ctx.body = { code: 404, msg: '邀请码无效' }
     return
@@ -112,8 +113,8 @@ router.post('/join', async (ctx) => {
   }
 
   // 检查是否在其他家庭
-  const all = db.prepare('SELECT * FROM families').all()
-  for (const r of all) {
+  const allRows = await all('SELECT * FROM families')
+  for (const r of allRows) {
     const ms = JSON.parse(r.members || '[]')
     if (ms.some(m => m.openid === openid)) {
       ctx.body = { code: 409, msg: '您已加入其他家庭，请先退出' }
@@ -131,8 +132,10 @@ router.post('/join', async (ctx) => {
   }
   family.members.push(newMember)
 
-  db.prepare('UPDATE families SET members = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
-    .run(JSON.stringify(family.members), family.id)
+  await run(
+    'UPDATE families SET members = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [JSON.stringify(family.members), family.id]
+  )
 
   ctx.body = { code: 200, data: family }
 })
@@ -142,7 +145,7 @@ router.post('/refresh-code', async (ctx) => {
   const { openid } = ctx.state.user
   const { familyId } = ctx.request.body
 
-  const row = db.prepare('SELECT * FROM families WHERE id = ?').get(familyId)
+  const row = await get('SELECT * FROM families WHERE id = ?', [familyId])
   if (!row) {
     ctx.body = { code: 404, msg: '家庭不存在' }
     return
@@ -156,8 +159,10 @@ router.post('/refresh-code', async (ctx) => {
   const inviteCode = generateInviteCode()
   const expireAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
 
-  db.prepare('UPDATE families SET invite_code = ?, invite_code_expire_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
-    .run(inviteCode, expireAt, familyId)
+  await run(
+    'UPDATE families SET invite_code = ?, invite_code_expire_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [inviteCode, expireAt, familyId]
+  )
 
   ctx.body = { code: 200, data: { inviteCode, inviteCodeExpireAt: expireAt } }
 })
@@ -167,7 +172,7 @@ router.post('/leave', async (ctx) => {
   const { openid } = ctx.state.user
   const { familyId } = ctx.request.body
 
-  const row = db.prepare('SELECT * FROM families WHERE id = ?').get(familyId)
+  const row = await get('SELECT * FROM families WHERE id = ?', [familyId])
   if (!row) {
     ctx.body = { code: 404, msg: '家庭不存在' }
     return
@@ -186,8 +191,10 @@ router.post('/leave', async (ctx) => {
   }
 
   members.splice(idx, 1)
-  db.prepare('UPDATE families SET members = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
-    .run(JSON.stringify(members), familyId)
+  await run(
+    'UPDATE families SET members = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [JSON.stringify(members), familyId]
+  )
 
   ctx.body = { code: 200, msg: '已退出家庭' }
 })
