@@ -53,8 +53,17 @@ function initTables() {
       CREATE INDEX IF NOT EXISTS idx_events_family_end ON events(family_id, end_time);
       CREATE INDEX IF NOT EXISTS idx_families_invite ON families(invite_code);
     `, (err) => {
-      if (err) reject(err)
-      else resolve()
+      if (err) {
+        reject(err)
+        return
+      }
+      // 兼容旧数据库：添加可能缺失的字段
+      db.run(`ALTER TABLE users ADD COLUMN avatar_url TEXT DEFAULT ''`, (err2) => {
+        if (err2 && !err2.message.includes('duplicate column name')) {
+          console.warn('添加 avatar_url 字段失败（可能已存在）', err2.message)
+        }
+        resolve()
+      })
     })
   })
 }

@@ -61,7 +61,7 @@
       </view>
 
       <view wx:for="{{dailyEvents}}" wx:key="_id" class="event-item" bindtap="onEditEvent" data-id="{{item._id}}">
-        <view class="event-avatar" style="background-color: {{getMemberColor(item.creator_openid)}};">{{getMemberName(item.creator_openid)[0]}}</view>
+        <view class="event-avatar" style="background-color: {{item.creatorColor}};">{{item.creatorAvatarText}}</view>
         <view class="event-body">
           <view class="event-title">{{item.title}}</view>
           <view class="event-meta">
@@ -69,7 +69,7 @@
             <text wx:else class="event-time">全天</text>
             <view class="event-tags">
               <text class="tag-type {{item.type}}">{{item.type === 'family' ? '家庭' : '个人'}}</text>
-              <text class="tag-creator" style="color: {{getMemberColor(item.creator_openid)}};">{{getMemberName(item.creator_openid)}}</text>
+              <text class="tag-creator" style="color: {{item.creatorColor}};">{{getMemberName(item.creator_openid)}}</text>
             </view>
           </view>
           <view wx:if="{{item.location}}" class="event-location">📍 {{item.location}}</view>

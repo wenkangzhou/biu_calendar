@@ -49,8 +49,12 @@ router.get('/', async (ctx) => {
 
   // 统计模式
   if (stats !== undefined) {
-    const todayStart = new Date().toISOString().slice(0, 10) + 'T00:00:00.000Z'
-    const todayEnd = new Date().toISOString().slice(0, 10) + 'T23:59:59.999Z'
+    const now = new Date()
+    const yyyy = now.getFullYear()
+    const mm = String(now.getMonth() + 1).padStart(2, '0')
+    const dd = String(now.getDate()).padStart(2, '0')
+    const todayStart = `${yyyy}-${mm}-${dd}T00:00:00.000Z`
+    const todayEnd = `${yyyy}-${mm}-${dd}T23:59:59.999Z`
 
     const totalRow = await get('SELECT COUNT(*) as count FROM events WHERE family_id = ?', [family.id])
     const todayRow = await get(

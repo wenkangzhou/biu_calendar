@@ -45,7 +45,10 @@
     <view class="member-card">
       <view class="card-title">家庭成员（{{family.members.length}}人）</view>
       <view wx:for="{{family.members}}" wx:key="openid" class="member-item {{item.openid === myOpenid ? 'editable' : ''}}" bindtap="onMemberTap" data-openid="{{item.openid}}">
-        <view class="member-avatar" style="background-color: {{item.color}};">{{item.nickName[0]}}</view>
+        <view class="member-avatar" style="background-color: {{item.color}};">
+          <text wx:if="{{item.avatarUrl}}">{{item.avatarUrl}}</text>
+          <text wx:else>{{item.nickName[0]}}</text>
+        </view>
         <view class="member-info">
           <view class="member-name">{{item.nickName}}</view>
           <view class="member-tag">{{item.identityTag}} · {{item.role === 'creator' ? '创建者' : item.role === 'admin' ? '管理员' : '成员'}}</view>

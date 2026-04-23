@@ -92,13 +92,20 @@ Page({
   },
 
   async loadDailyEvents(dateStr: string) {
-    const { family } = this.data
+    const { family, memberMap } = this.data
     if (!family) return
     try {
       const res: any = await getDailyEvents(family._id, dateStr)
       if (res.code === 200) {
         const list = res.data.sort((a: any, b: any) => {
           return new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+        }).map((e: any) => {
+          const m = memberMap[e.creator_openid]
+          return {
+            ...e,
+            creatorColor: m ? m.color : '#999',
+            creatorAvatarText: m && (m.avatarUrl || m.nickName) ? (m.avatarUrl || m.nickName[0]) : '?' 
+          }
         })
         this.setData({ dailyEvents: list })
       }
