@@ -76,8 +76,9 @@ Page({
   onTitleChange(e: any) { this.setData({ title: e.detail.value }) },
   onTypeChange(e: any) {
     const type = e.detail.value
+    const familyMembers = this.data.family && this.data.family.members ? this.data.family.members : []
     const participants = type === 'family'
-      ? (this.data.family?.members || []).map((m: any) => m.openid)
+      ? familyMembers.map((m: any) => m.openid)
       : [app.globalData.openid]
     this.setData({ type, participants })
   },

@@ -38,6 +38,7 @@
             <view wx:if="{{item.day > 0 && item.dots.length > 0}}" class="dots-row">
               <view wx:for="{{item.dots}}" wx:for-item="dot" wx:key="*this" class="day-dot" style="background-color: {{dot}};"></view>
             </view>
+            <view wx:elif="{{item.day > 0 && item.lunarText}}" class="lunar-text {{item.lunarText.length > 2 ? 'small' : ''}}">{{item.lunarText}}</view>
             <view wx:else class="day-bar-placeholder"></view>
           </view>
         </view>

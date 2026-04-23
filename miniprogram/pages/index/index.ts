@@ -1,5 +1,7 @@
 import { getMonthlyEvents, getDailyEvents, getFamily, getToken } from '../../utils/api'
 
+const { Solar } = require('lunar-javascript')
+
 const app = getApp<any>()
 
 Page({
@@ -38,11 +40,7 @@ Page({
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 0 })
     }
-    if (this.data.hasFamily) {
-      await this.loadEvents()
-      this.updateCalendarDots()
-      this.loadDailyEvents(this.data.selectedDate)
-    }
+    await this.loadFamilyAndEvents()
   },
 
   async loadFamilyAndEvents() {
@@ -127,7 +125,29 @@ Page({
     }
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`
-      days.push({ day: d, date: dateStr, dots: [] })
+      // 计算农历/节假日
+      let lunarText = ''
+      try {
+        const solar = Solar.fromYmd(year, month, d)
+        const lunar = solar.getLunar()
+        const festivals = solar.getFestivals()
+        const lunarFestivals = lunar.getFestivals()
+        const jieQi = lunar.getJieQi()
+        if (festivals && festivals.length > 0) {
+          lunarText = festivals[0]
+        } else if (lunarFestivals && lunarFestivals.length > 0) {
+          lunarText = lunarFestivals[0]
+        } else if (jieQi) {
+          lunarText = jieQi
+        } else if (lunar.getDay() === 1) {
+          lunarText = lunar.getMonthInChinese() + '月'
+        } else {
+          lunarText = lunar.getDayInChinese()
+        }
+      } catch (e) {
+        // 忽略农历计算错误
+      }
+      days.push({ day: d, date: dateStr, dots: [], lunarText })
     }
     this.setData({ calendarDays: days })
   },

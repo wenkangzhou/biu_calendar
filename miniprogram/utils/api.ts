@@ -53,10 +53,10 @@ function request<T = any>(method: string, url: string, data?: any): Promise<T> {
 export async function login(code: string, userInfo?: any) {
   const res: any = await request('POST', '/auth/login', {
     code,
-    nickName: userInfo?.nickName || '',
-    avatarUrl: userInfo?.avatarUrl || ''
+    nickName: userInfo && userInfo.nickName ? userInfo.nickName : '',
+    avatarUrl: userInfo && userInfo.avatarUrl ? userInfo.avatarUrl : ''
   })
-  if (res.data?.token) {
+  if (res.data && res.data.token) {
     saveToken(res.data.token)
   }
   return res

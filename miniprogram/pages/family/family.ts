@@ -27,6 +27,11 @@ Page({
       await app.loginPromise
     }
     await this.loadFamily()
+    // 自动填充用户已有昵称
+    const user = app.globalData.userInfo
+    if (user && user.nick_name) {
+      this.setData({ createNickName: user.nick_name, joinNickName: user.nick_name })
+    }
   },
 
   async onShow() {
