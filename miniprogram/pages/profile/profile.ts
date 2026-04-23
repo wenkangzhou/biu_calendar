@@ -79,14 +79,6 @@ Page({
     wx.showToast({ title: '订阅功能开发中', icon: 'none' })
   },
 
-  onFontSize() {
-    wx.showToast({ title: '字体设置开发中', icon: 'none' })
-  },
-
-  onNotification() {
-    wx.showToast({ title: '消息通知开发中', icon: 'none' })
-  },
-
   onShareAppMessage() {
     return {
       title: '家庭共享日历',

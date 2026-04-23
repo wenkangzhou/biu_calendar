@@ -50,11 +50,8 @@ router.get('/', async (ctx) => {
   // 统计模式
   if (stats !== undefined) {
     const now = new Date()
-    const yyyy = now.getFullYear()
-    const mm = String(now.getMonth() + 1).padStart(2, '0')
-    const dd = String(now.getDate()).padStart(2, '0')
-    const todayStart = `${yyyy}-${mm}-${dd}T00:00:00.000Z`
-    const todayEnd = `${yyyy}-${mm}-${dd}T23:59:59.999Z`
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0).toISOString()
+    const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).toISOString()
 
     const totalRow = await get('SELECT COUNT(*) as count FROM events WHERE family_id = ?', [family.id])
     const todayRow = await get(
@@ -96,8 +93,9 @@ router.get('/', async (ctx) => {
       [family.id, start, end, start, end, start, end]
     )
   } else if (date) {
-    const dayStart = new Date(date + 'T00:00:00').toISOString()
-    const dayEnd = new Date(date + 'T23:59:59').toISOString()
+    const [y, m, d] = date.split('-').map(Number)
+    const dayStart = new Date(y, m - 1, d, 0, 0, 0).toISOString()
+    const dayEnd = new Date(y, m - 1, d, 23, 59, 59).toISOString()
     rows = await all(
       `SELECT * FROM events WHERE family_id = ? AND (
         (start_time >= ? AND start_time <= ?) OR

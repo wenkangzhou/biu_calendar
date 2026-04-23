@@ -109,12 +109,18 @@ Page({
       return
     }
 
+    // 使用本地时间构造Date，再转为UTC存储
+    const parseLocal = (dateStr: string, timeStr: string) => {
+      const [y, m, d] = dateStr.split('-').map(Number)
+      const [h, min] = timeStr.split(':').map(Number)
+      return new Date(y, m - 1, d, h, min)
+    }
     const start = isAllDay
-      ? new Date(startDate + 'T00:00:00')
-      : new Date(startDate + 'T' + startTime)
+      ? parseLocal(startDate, '00:00')
+      : parseLocal(startDate, startTime)
     const end = isAllDay
-      ? new Date(endDate + 'T23:59:59')
-      : new Date(endDate + 'T' + endTime)
+      ? parseLocal(endDate, '23:59')
+      : parseLocal(endDate, endTime)
 
     if (start >= end) {
       wx.showToast({ title: '结束时间必须晚于开始时间', icon: 'none' })
