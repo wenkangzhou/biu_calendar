@@ -167,6 +167,39 @@ router.post('/refresh-code', async (ctx) => {
   ctx.body = { code: 200, data: { inviteCode, inviteCodeExpireAt: expireAt } }
 })
 
+// PUT /api/family/member
+router.put('/member', async (ctx) => {
+  const { openid } = ctx.state.user
+  const { familyId, nickName, identityTag } = ctx.request.body
+
+  const row = await get('SELECT * FROM families WHERE id = ?', [familyId])
+  if (!row) {
+    ctx.body = { code: 404, msg: '家庭不存在' }
+    return
+  }
+
+  const members = JSON.parse(row.members || '[]')
+  const idx = members.findIndex(m => m.openid === openid)
+  if (idx === -1) {
+    ctx.body = { code: 403, msg: '您不在该家庭中' }
+    return
+  }
+
+  if (nickName !== undefined && nickName.trim() !== '') {
+    members[idx].nickName = nickName.trim()
+  }
+  if (identityTag !== undefined) {
+    members[idx].identityTag = identityTag.trim() || '其他'
+  }
+
+  await run(
+    'UPDATE families SET members = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [JSON.stringify(members), familyId]
+  )
+
+  ctx.body = { code: 200, data: members[idx] }
+})
+
 // POST /api/family/leave
 router.post('/leave', async (ctx) => {
   const { openid } = ctx.state.user

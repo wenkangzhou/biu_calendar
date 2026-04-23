@@ -1,4 +1,4 @@
-import { createFamily, joinFamily, getFamily, refreshInviteCode, leaveFamily, getToken } from '../../utils/api'
+import { createFamily, joinFamily, getFamily, refreshInviteCode, leaveFamily, getToken, updateFamilyMember } from '../../utils/api'
 
 const app = getApp<any>()
 
@@ -14,7 +14,10 @@ Page({
     joinCode: '',
     joinNickName: '',
     joinIdentity: '其他',
-    loading: true
+    loading: true,
+    showEdit: false,
+    editNickName: '',
+    editIdentity: '其他'
   },
 
   async onLoad() {
@@ -58,13 +61,58 @@ Page({
   onJoinCodeChange(e: any) { this.setData({ joinCode: e.detail.value }) },
   onJoinNickChange(e: any) { this.setData({ joinNickName: e.detail.value }) },
   onJoinIdentityChange(e: any) { this.setData({ joinIdentity: e.detail.value }) },
+  onEditNickChange(e: any) { this.setData({ editNickName: e.detail.value }) },
+  onEditIdentityChange(e: any) { this.setData({ editIdentity: e.detail.value }) },
 
   toggleCreate() {
     this.setData({ showCreate: !this.data.showCreate, showJoin: false })
   },
 
   toggleJoin() {
-    this.setData({ showJoin: !this.data.showJoin, showCreate: false })
+    this.setData({ showJoin: !this.data.showJoin, showCreate: false, showEdit: false })
+  },
+
+  toggleEdit() {
+    const { family } = this.data
+    if (!family) return
+    const openid = app.globalData.openid
+    const me = family.members.find((m: any) => m.openid === openid)
+    if (!me) return
+    this.setData({
+      showEdit: !this.data.showEdit,
+      showCreate: false,
+      showJoin: false,
+      editNickName: me.nickName || '',
+      editIdentity: me.identityTag || '其他'
+    })
+  },
+
+  async doEditMember() {
+    const { family, editNickName, editIdentity } = this.data
+    if (!family) return
+    if (!editNickName.trim()) {
+      wx.showToast({ title: '昵称不能为空', icon: 'none' })
+      return
+    }
+    wx.showLoading({ title: '保存中' })
+    try {
+      const res: any = await updateFamilyMember({
+        familyId: family._id,
+        nickName: editNickName.trim(),
+        identityTag: editIdentity
+      })
+      if (res.code === 200) {
+        wx.showToast({ title: '保存成功', icon: 'success' })
+        await this.loadFamily()
+        this.setData({ showEdit: false })
+      } else {
+        wx.showToast({ title: res.msg || '保存失败', icon: 'none' })
+      }
+    } catch (err: any) {
+      wx.showToast({ title: err.message || '保存失败', icon: 'none' })
+    } finally {
+      wx.hideLoading()
+    }
   },
 
   async doCreate() {
