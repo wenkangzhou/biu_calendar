@@ -8,7 +8,7 @@
       </view>
       <view class="profile-info">
         <view class="profile-name">
-          {{user?.nick_name || '点击设置昵称'}}
+          {{user && user.nick_name ? user.nick_name : '点击设置昵称'}}
           <text class="edit-icon">✏️</text>
         </view>
       </view>
