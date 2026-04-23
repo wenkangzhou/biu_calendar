@@ -194,13 +194,15 @@ router.post('/', async (ctx) => {
     try {
       const creator = await get('SELECT * FROM users WHERE openid = ?', [openid])
       if (creator && creator.subscribed) {
-        const startStr = new Date(startTime).toISOString().slice(0, 10)
-        const endStr = new Date(endTime).toISOString().slice(0, 10)
-        await sendSubscribeMessage(openid, 'NUejq84LuZ3CzlnoKnaDN2F-9ncwNcPsJ7LN40YOTEQ', '/pages/index/index', {
-          thing3: { value: title.trim().slice(0, 20) },
-          date2: { value: startStr },
+        const fmt = (d) => {
+          const date = new Date(d)
+          return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`
+        }
+        await sendSubscribeMessage(openid, 'NUejq84LuZ3CzlnoKnaDN-YczktShhR-71EWRCIs4F4', '/pages/index/index', {
           name1: { value: creator.nick_name || '家人' },
-          date6: { value: endStr }
+          thing3: { value: title.trim().slice(0, 20) },
+          time13: { value: fmt(startTime) },
+          time14: { value: fmt(endTime) }
         })
       }
     } catch (err) {
