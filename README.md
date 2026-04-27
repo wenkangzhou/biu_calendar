@@ -6,10 +6,12 @@
 
 ## 功能特性
 
-- 📅 **月视图日历**：彩色圆点标识不同成员的日程密度
-- 👨‍👩‍👧‍👦 **家庭管理**：创建家庭、邀请码加入、成员颜色区分
-- 📝 **日程管理**：个人/家庭日程、全天/时段、地点备注
+- 📅 **月/周视图日历**：月视图圆点标识日程密度，周视图时间轴展示时段分布
+- 👨‍👩‍👧‍👦 **家庭管理**：创建家庭、邀请码加入、成员颜色区分（审核模式自动隐藏）
+- 📝 **日程管理**：个人/家庭日程、全天/时段、地点备注、完成状态
+- 🔍 **搜索**：支持标题/地点/备注关键词搜索
 - 🔒 **权限控制**：创建者/管理员/普通成员三级权限
+- 🛡️ **审核模式**：通过环境变量一键降级为「纯个人日历」，隐藏所有社交属性
 - 🚀 **自建后端**：Node.js + SQLite，零平台绑定，长期成本固定
 
 ---
@@ -19,7 +21,7 @@
 | 端 | 技术 |
 |----|------|
 | 小程序 | 微信小程序原生框架 + TypeScript + SCSS |
-| 后端 | Node.js + Koa 2 + better-sqlite3 |
+| 后端 | Node.js + Koa 2 + sqlite3 |
 | 部署 | PM2 进程守护 + Caddy 反向代理（自动 HTTPS） |
 
 ---
@@ -40,11 +42,13 @@
 ├── backend/                   # Node.js 后端
 │   ├── src/
 │   │   ├── app.js            # Koa 主应用
+│   │   ├── config.js         # 审核模式等全局配置
 │   │   ├── db.js             # SQLite 数据库初始化
 │   │   ├── middleware/
 │   │   │   └── auth.js       # JWT 鉴权中间件
 │   │   └── routes/
 │   │       ├── auth.js       # 微信登录（code2session）
+│   │       ├── config.js     # 全局配置接口（审核模式状态）
 │   │       ├── family.js     # 家庭 CRUD
 │   │       └── event.js      # 日程 CRUD
 │   ├── ecosystem.config.js   # PM2 配置
@@ -149,9 +153,12 @@ biu-api.yiquwei.com {
 
 | 变量 | 必填 | 说明 |
 |------|------|------|
+| 变量 | 必填 | 说明 |
+|------|------|------|
 | `WX_APPID` | 是 | 微信小程序 AppID |
 | `WX_SECRET` | 是 | 微信小程序 AppSecret |
 | `JWT_SECRET` | 是 | JWT 签名密钥，建议 32 位以上随机字符串 |
+| `REVIEW_MODE` | 否 | 审核模式开关，`1` 或 `true` 开启，默认关闭 |
 | `PORT` | 否 | 服务端口，默认 3000 |
 | `NODE_ENV` | 否 | 环境标识，默认 production |
 
@@ -182,6 +189,7 @@ biu-api.yiquwei.com {
 | POST | `/api/family/refresh-code` | 刷新邀请码 |
 | POST | `/api/family/leave` | 退出家庭 |
 | GET | `/api/events?year=&month=` | 按月查询日程 |
+| GET | `/api/config` | 获取全局配置（审核模式状态） |
 | GET | `/api/events?date=` | 按日查询日程 |
 | GET | `/api/events/:id` | 日程详情 |
 | POST | `/api/events` | 创建日程 |
@@ -189,6 +197,43 @@ biu-api.yiquwei.com {
 | DELETE | `/api/events/:id` | 删除日程 |
 
 所有接口（除登录外）需在 Header 中携带 `Authorization: Bearer <token>`。
+
+---
+
+## 审核模式（Review Mode）
+
+个人主体小程序涉及社交功能（家庭共享、邀请码、UGC）时，微信审核可能不通过。审核模式通过后端环境变量一键降级为「纯个人日历」，无需重新发版前端。
+
+### 开启方式
+
+```bash
+# 生产环境
+REVIEW_MODE=1 pm2 restart ecosystem.config.js
+
+# 或临时测试
+REVIEW_MODE=1 node src/app.js
+```
+
+### 降级效果
+
+| 模块 | 正常模式 | 审核模式 |
+|------|---------|---------|
+| 后端 `GET /api/family` | 返回真实家庭数据 | 返回仅含当前用户的伪家庭 |
+| 后端 `POST /api/family/join` | 正常加入 | 返回 403 |
+| 后端 `GET /api/events` | 返回家庭全部日程 | 仅返回自己创建的日程 |
+| 后端 `POST /api/events` | 可创建家庭日程 | 强制 type=personal，忽略参与人 |
+| 前端 TabBar | 日历 / 家人 / 我的 | 日历 / 我的（隐藏家人） |
+| 前端首页 | 显示家庭栏、成员头像 | 隐藏家庭栏、成员头像 |
+| 前端新建日程 | 可选择个人/家庭类型 | 仅个人类型，无参与人 |
+| 前端家人页 | 创建/加入/邀请码 | 仅展示当前用户信息 |
+| 前端我的页 | 家庭卡片、统计数据 | 隐藏家庭相关卡片 |
+
+### 原理
+
+1. 后端 `config.js` 读取 `REVIEW_MODE` 环境变量
+2. 启动时暴露 `GET /api/config`，返回 `{ reviewMode: boolean }`
+3. 小程序 `app.ts` 的 `onLaunch` 中异步获取该配置，写入 `globalData.reviewMode`
+4. 所有涉及社交元素的 WXML 通过 `wx:if="{{!reviewMode}}"` 条件渲染隐藏
 
 ---
 
