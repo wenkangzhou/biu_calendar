@@ -4,7 +4,7 @@
     <input class="form-input" placeholder="日程标题" value="{{title}}" bindinput="onTitleChange" />
   </view>
 
-  <view class="form-group">
+  <view class="form-group" wx:if="{{!reviewMode}}">
     <view class="form-label">类型</view>
     <radio-group class="radio-group" bindchange="onTypeChange">
       <label class="radio-item">
@@ -19,7 +19,7 @@
   </view>
 
   <!-- 参与人选择 -->
-  <view class="form-group" wx:if="{{type === 'family'}}">
+  <view class="form-group" wx:if="{{type === 'family' && !reviewMode}}">
     <view class="form-label">参与人</view>
     <view class="participant-list">
       <view wx:for="{{family.members}}" wx:key="openid"

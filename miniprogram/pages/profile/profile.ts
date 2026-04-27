@@ -8,6 +8,7 @@ Page({
     family: null as any,
     hasFamily: false,
     myColor: '#7DD3C0',
+    reviewMode: true,
     stats: {
       total: 0,
       today: 0,
@@ -17,7 +18,7 @@ Page({
 
   async onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({ selected: 2 })
+      this.getTabBar().setData({ reviewMode: app.globalData.reviewMode || false })
     }
     if (!getToken() && app.loginPromise) {
       await app.loginPromise
@@ -27,7 +28,8 @@ Page({
     const myMember = memberMap[openid]
     this.setData({
       user: app.globalData.userInfo,
-      myColor: myMember ? myMember.color : '#7DD3C0'
+      myColor: myMember ? myMember.color : '#7DD3C0',
+      reviewMode: app.globalData.reviewMode || false
     })
     await this.loadFamily()
     this.calcStats()

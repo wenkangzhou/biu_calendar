@@ -8,6 +8,7 @@ const authRouter = require('./routes/auth')
 const familyRouter = require('./routes/family')
 const eventRouter = require('./routes/event')
 const userRouter = require('./routes/user')
+const configRouter = require('./routes/config')
 
 const app = new Koa()
 const PORT = process.env.PORT || 3000
@@ -39,6 +40,7 @@ app.use(async (ctx, next) => {
 })
 
 // 路由
+app.use(configRouter.routes()).use(configRouter.allowedMethods())
 app.use(authRouter.routes()).use(authRouter.allowedMethods())
 app.use(familyRouter.routes()).use(familyRouter.allowedMethods())
 app.use(eventRouter.routes()).use(eventRouter.allowedMethods())

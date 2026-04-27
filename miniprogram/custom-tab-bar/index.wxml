@@ -1,21 +1,31 @@
 <view class="tab-bar">
-  <view wx:for="{{list}}" wx:key="index" class="tab-item {{selected === index ? 'active' : ''}}" data-index="{{index}}" data-path="{{item.pagePath}}" bindtap="switchTab">
+  <view class="tab-item {{selected === 0 ? 'active' : ''}}" data-path="/pages/index/index" bindtap="switchTab">
     <view class="tab-icon">
-      <view wx:if="{{index === 0}}" class="icon-calendar">
+      <view class="icon-calendar">
         <view class="cal-top"></view>
         <view class="cal-body"></view>
       </view>
-      <view wx:if="{{index === 1}}" class="icon-family">
+    </view>
+    <view class="tab-text">日历</view>
+  </view>
+  <view wx:if="{{!reviewMode}}" class="tab-item {{selected === 1 ? 'active' : ''}}" data-path="/pages/family/family" bindtap="switchTab">
+    <view class="tab-icon">
+      <view class="icon-family">
         <view class="fam-head"></view>
         <view class="fam-shoulder"></view>
         <view class="fam-head fam-head2"></view>
         <view class="fam-shoulder fam-shoulder2"></view>
       </view>
-      <view wx:if="{{index === 2}}" class="icon-profile">
+    </view>
+    <view class="tab-text">家人</view>
+  </view>
+  <view class="tab-item {{selected === 2 ? 'active' : ''}}" data-path="/pages/profile/profile" bindtap="switchTab">
+    <view class="tab-icon">
+      <view class="icon-profile">
         <view class="pro-head"></view>
         <view class="pro-body"></view>
       </view>
     </view>
-    <view class="tab-text">{{item.text}}</view>
+    <view class="tab-text">我的</view>
   </view>
 </view>

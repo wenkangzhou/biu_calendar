@@ -93,5 +93,8 @@ export const updateFamily = (data: { familyId: string; name: string }) =>
 export const updateFamilyMember = (data: { familyId: string; nickName?: string; identityTag?: string }) =>
   request('PUT', '/family/member', data)
 
+// 配置相关
+export const getConfig = () => request('GET', '/config')
+
 // 导出 token 工具
 export { getToken, saveToken, removeToken }

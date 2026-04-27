@@ -19,13 +19,15 @@ Page({
     editFamilyName: '',
     editNickName: '',
     editIdentity: '其他',
-    myOpenid: ''
+    myOpenid: '',
+    reviewMode: true
   },
 
   async onLoad() {
     if (!getToken() && app.loginPromise) {
       await app.loginPromise
     }
+    this.setData({ reviewMode: app.globalData.reviewMode || false })
     await this.loadFamily()
     // 自动填充用户已有昵称
     const user = app.globalData.userInfo
@@ -36,7 +38,7 @@ Page({
 
   async onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({ selected: 1 })
+      this.getTabBar().setData({ reviewMode: app.globalData.reviewMode || false })
     }
     await this.loadFamily()
   },

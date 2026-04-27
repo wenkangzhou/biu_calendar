@@ -19,6 +19,7 @@ Page({
     familyMembers: [] as any[],
     hasFamily: false,
     loading: true,
+    reviewMode: true,
     viewMode: 'month' as 'month' | 'week',
     weekDays: [] as any[],
     weekEvents: [] as any[],
@@ -33,7 +34,8 @@ Page({
     this.setData({
       today,
       selectedDate: today,
-      weekdayText: this.getWeekdayText(new Date())
+      weekdayText: this.getWeekdayText(new Date()),
+      reviewMode: app.globalData.reviewMode || false
     })
     this.buildCalendar()
 
@@ -45,8 +47,9 @@ Page({
   },
 
   async onShow() {
+    this.setData({ reviewMode: app.globalData.reviewMode || false })
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({ selected: 0 })
+      this.getTabBar().setData({ reviewMode: app.globalData.reviewMode || false })
     }
     await this.loadFamilyAndEvents()
   },
@@ -456,51 +459,42 @@ Page({
       // 定时事件分配列解决重叠
       timedEvents.sort((a: any, b: any) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
 
-      const columns: any[][] = []
-      const eventMeta = timedEvents.map((e: any) => {
+      const BLOCK_W = 88   // 固定宽度 88%
+      const BLOCK_H = 4    // 固定高度 4rpx（2px）
+      const items = timedEvents.map((e: any) => {
         const s = new Date(e.start_time)
         const en = new Date(e.end_time)
-        const startMin = s.getHours() * 60 + s.getMinutes()
-        const endMin = en.getHours() * 60 + en.getMinutes()
-        return {
-          ...e,
-          startMin: Math.max(startMin, 6 * 60),
-          endMin: Math.min(endMin, 24 * 60)
-        }
+        const sm = Math.max(s.getHours() * 60 + s.getMinutes(), 360)
+        const em = Math.min(en.getHours() * 60 + en.getMinutes(), 1440)
+        return { e, sm, em }
       })
 
-      eventMeta.forEach((e: any) => {
+      const cols: any[][] = []
+      items.forEach((it) => {
         let placed = false
-        for (const col of columns) {
+        for (const col of cols) {
           const last = col[col.length - 1]
-          if (e.startMin >= last.endMin) {
-            col.push(e)
+          if (it.sm >= last.em) {
+            col.push(it)
             placed = true
             break
           }
         }
-        if (!placed) {
-          columns.push([e])
-        }
+        if (!placed) cols.push([it])
       })
 
-      const totalCols = columns.length || 1
-      columns.forEach((col, colIndex) => {
-        col.forEach((e: any) => {
-          const top = (e.startMin / 60 - 6) * 60
-          const rawHeight = ((e.endMin - e.startMin) / 60) * 60
-          const height = Math.max(rawHeight, 28)
-          const m = memberMap[e.creator_openid]
-
+      cols.forEach((col, ci) => {
+        col.forEach((it) => {
+          const m = memberMap[it.e.creator_openid]
           weekEventBlocks.push({
-            _id: e._id || e.id,
-            title: e.title,
+            _id: it.e._id || it.e.id,
+            title: it.e.title,
             dayIndex,
-            top,
-            height,
+            top: (it.sm / 60 - 6) * 60,
+            height: BLOCK_H,
             color: m ? m.color : '#999',
-            left: (colIndex / totalCols) * 100,
-            width: (1 / totalCols) * 100,
+            left: 4 + ci * 2,
+            width: BLOCK_W,
             isAllDay: false
           })
         })

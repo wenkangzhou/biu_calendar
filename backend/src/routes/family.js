@@ -1,6 +1,7 @@
 const Router = require('koa-router')
 const { all, get, run } = require('../db')
 const { authMiddleware } = require('../middleware/auth')
+const { isReviewMode } = require('../config')
 
 const router = new Router({ prefix: '/api/family' })
 router.use(authMiddleware())
@@ -29,6 +30,42 @@ function rowToFamily(row) {
 // GET /api/family
 router.get('/', async (ctx) => {
   const { openid } = ctx.state.user
+
+  // 审核模式：返回伪家庭（仅自己）
+  if (isReviewMode()) {
+    const rows = await all('SELECT * FROM families')
+    let family = null
+    for (const row of rows) {
+      const members = JSON.parse(row.members || '[]')
+      if (members.some(m => m.openid === openid)) {
+        family = rowToFamily(row)
+        break
+      }
+    }
+    if (!family) {
+      // 自动创建伪家庭
+      const pseudoMembers = JSON.stringify([{
+        openid,
+        nickName: '我',
+        identityTag: '用户',
+        color: getMemberColor(0),
+        role: 'creator',
+        joinedAt: new Date().toISOString()
+      }])
+      const result = await run(
+        'INSERT INTO families (name, creator_openid, members, invite_code, invite_code_expire_at) VALUES (?, ?, ?, ?, ?)',
+        ['我的日历', openid, pseudoMembers, '', '']
+      )
+      family = rowToFamily(await get('SELECT * FROM families WHERE id = ?', [result.lastID]))
+    }
+    // 审核模式下隐藏邀请码，改名
+    family.name = '我的日历'
+    family.inviteCode = ''
+    family.inviteCodeExpireAt = ''
+    ctx.body = { code: 200, data: family }
+    return
+  }
+
   const rows = await all('SELECT * FROM families')
   let family = null
   for (const row of rows) {
@@ -78,6 +115,28 @@ router.post('/', async (ctx) => {
     }
   }
 
+  // 审核模式：自动创建伪家庭
+  if (isReviewMode()) {
+    const members = JSON.stringify([{
+      openid,
+      nickName: nickName || '我',
+      identityTag: identityTag || '用户',
+      color: getMemberColor(0),
+      role: 'creator',
+      joinedAt: new Date().toISOString()
+    }])
+    const result = await run(
+      'INSERT INTO families (name, creator_openid, members, invite_code, invite_code_expire_at) VALUES (?, ?, ?, ?, ?)',
+      ['我的日历', openid, members, '', '']
+    )
+    const family = rowToFamily(await get('SELECT * FROM families WHERE id = ?', [result.lastID]))
+    family.name = '我的日历'
+    family.inviteCode = ''
+    family.inviteCodeExpireAt = ''
+    ctx.body = { code: 200, data: family }
+    return
+  }
+
   const inviteCode = generateInviteCode()
   const expireAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
   const members = JSON.stringify([{
@@ -101,6 +160,12 @@ router.post('/', async (ctx) => {
 // POST /api/family/join
 router.post('/join', async (ctx) => {
   const { openid } = ctx.state.user
+
+  if (isReviewMode()) {
+    ctx.body = { code: 403, msg: '暂不支持加入' }
+    return
+  }
+
   const { inviteCode, nickName, identityTag } = ctx.request.body
 
   if (!inviteCode || !nickName) {
@@ -156,6 +221,11 @@ router.post('/join', async (ctx) => {
 
 // POST /api/family/refresh-code
 router.post('/refresh-code', async (ctx) => {
+  if (isReviewMode()) {
+    ctx.body = { code: 403, msg: '暂不支持刷新邀请码' }
+    return
+  }
+
   const { openid } = ctx.state.user
   const { familyId } = ctx.request.body
 

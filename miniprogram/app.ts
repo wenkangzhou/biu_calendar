@@ -1,4 +1,4 @@
-import { login } from './utils/api'
+import { login, getConfig } from './utils/api'
 
 export interface IAppOption {
   globalData: {
@@ -6,6 +6,7 @@ export interface IAppOption {
     openid?: string
     family?: any
     memberMap?: Record<string, any>
+    reviewMode?: boolean
   }
   initLogin?: () => Promise<void>
   loginPromise?: Promise<void>
@@ -16,7 +17,8 @@ App<IAppOption>({
     userInfo: null,
     openid: '',
     family: null,
-    memberMap: {}
+    memberMap: {},
+    reviewMode: true
   },
 
   onLaunch() {
@@ -48,6 +50,24 @@ App<IAppOption>({
             map[m.openid] = m
           })
           this.globalData.memberMap = map
+        }
+
+        // 获取审核模式配置
+        try {
+          const cfg: any = await getConfig()
+          if (cfg.code === 200) {
+            this.globalData.reviewMode = cfg.data.reviewMode
+            // 登录完成时主动更新 tabBar，避免首页 onShow 已执行过但 reviewMode 还未拿到
+            const pages = getCurrentPages()
+            if (pages.length > 0) {
+              const page = pages[pages.length - 1] as any
+              if (typeof page.getTabBar === 'function' && page.getTabBar()) {
+                page.getTabBar().setData({ reviewMode: this.globalData.reviewMode })
+              }
+            }
+          }
+        } catch (e) {
+          console.error('获取配置失败', e)
         }
       }
     } catch (err) {

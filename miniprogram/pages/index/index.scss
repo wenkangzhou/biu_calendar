@@ -469,19 +469,8 @@ page {
         .timeline-event {
           position: absolute;
           border-radius: $radius-sm;
-          padding: 3rpx 5rpx;
           box-sizing: border-box;
           overflow: hidden;
-          .event-title-text {
-            font-size: $fs-xs;
-            color: $text-white;
-            font-weight: 500;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-          }
         }
       }
     }

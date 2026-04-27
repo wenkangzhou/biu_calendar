@@ -4,24 +4,24 @@
   <!-- 无家庭 -->
   <block wx:elif="{{!hasFamily}}">
     <view class="empty">
-      <view class="empty-title">您还没有加入家庭</view>
+      <view class="empty-title">{{reviewMode ? '欢迎使用我的日历' : '您还没有加入家庭'}}</view>
       <view class="btn-group">
-        <button class="btn-primary" bindtap="toggleCreate">创建家庭</button>
-        <button class="btn-secondary" bindtap="toggleJoin">加入家庭</button>
+        <button class="btn-primary" bindtap="toggleCreate">{{reviewMode ? '开始使用' : '创建家庭'}}</button>
+        <button wx:if="{{!reviewMode}}" class="btn-secondary" bindtap="toggleJoin">加入家庭</button>
       </view>
     </view>
 
     <!-- 创建家庭表单 -->
     <view wx:if="{{showCreate}}" class="form-card">
-      <view class="form-title">创建家庭</view>
-      <input class="form-input" placeholder="家庭名称（如：张家）" value="{{createName}}" bindinput="onCreateNameChange" />
-      <input class="form-input" placeholder="您在家庭中的昵称" value="{{createNickName}}" bindinput="onCreateNickChange" />
-      <input class="form-input" placeholder="身份标签（如：爸爸、妈妈）" value="{{createIdentity}}" bindinput="onCreateIdentityChange" />
-      <button class="btn-primary" bindtap="doCreate">确认创建</button>
+      <view class="form-title">{{reviewMode ? '开始使用' : '创建家庭'}}</view>
+      <input wx:if="{{!reviewMode}}" class="form-input" placeholder="家庭名称（如：张家）" value="{{createName}}" bindinput="onCreateNameChange" />
+      <input class="form-input" placeholder="您的昵称" value="{{createNickName}}" bindinput="onCreateNickChange" />
+      <input wx:if="{{!reviewMode}}" class="form-input" placeholder="身份标签（如：爸爸、妈妈）" value="{{createIdentity}}" bindinput="onCreateIdentityChange" />
+      <button class="btn-primary" bindtap="doCreate">确认</button>
     </view>
 
     <!-- 加入家庭表单 -->
-    <view wx:if="{{showJoin}}" class="form-card">
+    <view wx:if="{{showJoin && !reviewMode}}" class="form-card">
       <view class="form-title">加入家庭</view>
       <input class="form-input" placeholder="6位邀请码" maxlength="6" value="{{joinCode}}" bindinput="onJoinCodeChange" />
       <input class="form-input" placeholder="您在家庭中的昵称" value="{{joinNickName}}" bindinput="onJoinNickChange" />
@@ -33,8 +33,8 @@
   <!-- 已有家庭 -->
   <block wx:else>
     <view class="family-card">
-      <view class="family-title">{{family.name}}</view>
-      <view class="invite-box">
+      <view class="family-title">{{reviewMode ? '我的日历' : family.name}}</view>
+      <view class="invite-box" wx:if="{{!reviewMode}}">
         <view class="invite-label">家庭邀请码</view>
         <view class="invite-code {{!family.inviteCode ? 'empty' : ''}}" bindtap="onCopyCode">{{family.inviteCode || '生成中...'}}</view>
         <view class="invite-tip">把邀请码发给家人，让他们在「加入家庭」中输入即可加入</view>
@@ -43,7 +43,7 @@
     </view>
 
     <view class="member-card">
-      <view class="card-title">家庭成员（{{family.members.length}}人）</view>
+      <view class="card-title">{{reviewMode ? '个人信息' : ('家庭成员（' + family.members.length + '人）')}}</view>
       <view wx:for="{{family.members}}" wx:key="openid" class="member-item {{item.openid === myOpenid ? 'editable' : ''}}" bindtap="onMemberTap" data-openid="{{item.openid}}">
         <view class="member-avatar" style="background-color: {{item.color}};">
           <text wx:if="{{item.avatarUrl}}">{{item.avatarUrl}}</text>
@@ -51,7 +51,7 @@
         </view>
         <view class="member-info">
           <view class="member-name">{{item.nickName}}</view>
-          <view class="member-tag">{{item.identityTag}} · {{item.role === 'creator' ? '创建者' : item.role === 'admin' ? '管理员' : '成员'}}</view>
+          <view class="member-tag" wx:if="{{!reviewMode}}">{{item.identityTag}} · {{item.role === 'creator' ? '创建者' : item.role === 'admin' ? '管理员' : '成员'}}</view>
         </view>
         <view wx:if="{{item.openid === myOpenid}}" class="edit-hint">点击修改 ›</view>
       </view>
@@ -60,13 +60,13 @@
     <!-- 编辑表单 -->
     <view wx:if="{{showEdit}}" class="form-card">
       <view class="form-title">修改信息</view>
-      <input wx:if="{{family.creatorOpenid === myOpenid}}" class="form-input" placeholder="家庭名称" value="{{editFamilyName}}" bindinput="onEditFamilyNameChange" />
+      <input wx:if="{{family.creatorOpenid === myOpenid && !reviewMode}}" class="form-input" placeholder="家庭名称" value="{{editFamilyName}}" bindinput="onEditFamilyNameChange" />
       <input class="form-input" placeholder="身份标签（如：爸爸、妈妈）" value="{{editIdentity}}" bindinput="onEditIdentityChange" />
-      <button wx:if="{{family.creatorOpenid === myOpenid && editFamilyName !== family.name}}" class="btn-primary" bindtap="doEditFamilyName">保存家庭名称</button>
+      <button wx:if="{{family.creatorOpenid === myOpenid && !reviewMode && editFamilyName !== family.name}}" class="btn-primary" bindtap="doEditFamilyName">保存家庭名称</button>
       <button class="btn-primary" bindtap="doEditMember">保存个人信息</button>
     </view>
 
-    <view class="danger-zone">
+    <view class="danger-zone" wx:if="{{!reviewMode}}">
       <button class="btn-danger" bindtap="onLeave">退出家庭</button>
     </view>
   </block>

@@ -21,7 +21,8 @@ Page({
     endTime: '',
     location: '',
     remark: '',
-    reminderEnabled: false
+    reminderEnabled: false,
+    reviewMode: true
   },
 
   async onLoad(options: any) {
@@ -30,7 +31,8 @@ Page({
     }
     const family = app.globalData.family
     const memberMap = app.globalData.memberMap || {}
-    this.setData({ family, memberMap, familyId: options.familyId || (family && family._id) || '' })
+    const reviewMode = app.globalData.reviewMode || false
+    this.setData({ family, memberMap, familyId: options.familyId || (family && family._id) || '', reviewMode })
 
     if (options.id) {
       this.setData({ isEdit: true, eventId: options.id })
@@ -56,10 +58,12 @@ Page({
         const start = new Date(e.start_time)
         const end = new Date(e.end_time)
         const reminders = e.reminders ? (typeof e.reminders === 'string' ? JSON.parse(e.reminders) : e.reminders) : { enabled: false }
+        // 审核模式：强制显示为个人类型
+        const reviewMode = app.globalData.reviewMode || false
         this.setData({
           title: e.title,
-          type: e.type,
-          participants: e.participants || [],
+          type: reviewMode ? 'personal' : e.type,
+          participants: reviewMode ? [] : (e.participants || []),
           isAllDay: e.is_all_day,
           startDate: this.formatDate(start),
           startTime: this.formatTime(start),

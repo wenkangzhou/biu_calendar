@@ -35,13 +35,14 @@
     <view class="notice-icon">ℹ️</view>
     <view class="notice-body">
       <view class="notice-title">请先设置你的昵称和头像</view>
-      <view class="notice-desc">方便其他家庭成员识别你</view>
+      <view class="notice-desc" wx:if="{{!reviewMode}}">方便其他家庭成员识别你</view>
+      <view class="notice-desc" wx:if="{{reviewMode}}">用于日历中展示</view>
     </view>
     <view class="notice-arrow">›</view>
   </view>
 
   <!-- 家庭卡片 -->
-  <view class="section-card">
+  <view class="section-card" wx:if="{{!reviewMode}}">
     <view wx:if="{{!hasFamily}}" class="empty-family">
       <view class="empty-icon">📅</view>
       <view class="empty-text">还没有加入家庭日历</view>
@@ -50,10 +51,10 @@
     <view wx:else class="family-info" bindtap="onGoFamily">
       <view class="family-name">{{family.name}}</view>
       <view class="family-members">
-        <view wx:for="{{family.members}}" wx:key="openid" class="fam-avatar" style="background-color: {{item.color}};">
-          {{item.nickName[0]}}
-        </view>
+      <view wx:for="{{family.members}}" wx:key="openid" class="fam-avatar" style="background-color: {{item.color}};">
+        {{item.nickName[0]}}
       </view>
+    </view>
       <view class="fam-arrow">›</view>
     </view>
   </view>

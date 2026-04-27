@@ -2,6 +2,7 @@ const Router = require('koa-router')
 const { all, get, run } = require('../db')
 const { authMiddleware } = require('../middleware/auth')
 const { sendSubscribeMessage } = require('../utils/wx')
+const { isReviewMode } = require('../config')
 
 const router = new Router({ prefix: '/api/events' })
 router.use(authMiddleware())
@@ -53,22 +54,29 @@ router.get('/search', async (ctx) => {
   }
 
   const keyword = q.trim()
-  const rows = await all(
+  let rows = await all(
     `SELECT * FROM events WHERE family_id = ? AND (instr(title, ?) > 0 OR instr(location, ?) > 0 OR instr(remark, ?) > 0) ORDER BY start_time DESC`,
     [family.id, keyword, keyword, keyword]
   )
 
-  // 按成员昵称搜索
-  const members = family.members || []
-  const matchedMembers = members.filter(m => m.nickName && m.nickName.includes(q.trim()))
+  // 审核模式：只搜索自己的日程
+  if (isReviewMode()) {
+    rows = rows.filter(r => r.creator_openid === openid)
+  }
+
+  // 按成员昵称搜索（审核模式跳过）
   let memberRows = []
-  if (matchedMembers.length > 0) {
-    const openids = matchedMembers.map(m => m.openid)
-    const placeholders = openids.map(() => '?').join(',')
-    memberRows = await all(
-      `SELECT * FROM events WHERE family_id = ? AND creator_openid IN (${placeholders})`,
-      [family.id, ...openids]
-    )
+  if (!isReviewMode()) {
+    const members = family.members || []
+    const matchedMembers = members.filter(m => m.nickName && m.nickName.includes(q.trim()))
+    if (matchedMembers.length > 0) {
+      const openids = matchedMembers.map(m => m.openid)
+      const placeholders = openids.map(() => '?').join(',')
+      memberRows = await all(
+        `SELECT * FROM events WHERE family_id = ? AND creator_openid IN (${placeholders})`,
+        [family.id, ...openids]
+      )
+    }
   }
 
   const seen = new Set()
@@ -164,6 +172,11 @@ router.get('/', async (ctx) => {
     }
     return true
   })
+
+  // 审核模式：只返回自己创建的日程
+  if (isReviewMode()) {
+    events = events.filter(evt => evt.creator_openid === openid)
+  }
 
   ctx.body = { code: 200, data: events }
 })
@@ -281,6 +294,17 @@ router.put('/:id', async (ctx) => {
   if (!canEdit) {
     ctx.body = { code: 403, msg: '无权编辑此日程' }
     return
+  }
+
+  // 审核模式：禁止改为 family 类型，忽略参与人
+  if (isReviewMode()) {
+    if (data.type === 'family') {
+      ctx.body = { code: 403, msg: '暂不支持家庭类型日程' }
+      return
+    }
+    if (data.participants !== undefined) {
+      data.participants = []
+    }
   }
 
   const allowed = ['title', 'type', 'participants', 'isAllDay', 'startTime', 'endTime', 'location', 'remark', 'isDone', 'visibility', 'reminderEnabled']

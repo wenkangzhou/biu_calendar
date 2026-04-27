@@ -16,8 +16,8 @@
   <block wx:else>
     <!-- 家庭名称栏 -->
     <view class="family-bar">
-      <view class="family-name">{{family.name || '我的家庭'}}</view>
-      <view class="family-members">
+      <view class="family-name">{{reviewMode ? '我的日历' : (family.name || '我的家庭')}}</view>
+      <view class="family-members" wx:if="{{!reviewMode}}">
         <view wx:for="{{familyMembers}}" wx:key="index" class="fam-avatar" style="background-color: {{item.color}};">{{item.avatarText}}</view>
       </view>
     </view>
@@ -25,7 +25,7 @@
     <!-- 搜索栏 -->
     <view class="search-bar">
       <view class="search-icon">🔍</view>
-      <input class="search-input" placeholder="搜索日程标题、地点、成员..." value="{{searchQuery}}" bindinput="onSearchInput" />
+      <input class="search-input" placeholder="{{reviewMode ? '搜索日程标题、地点...' : '搜索日程标题、地点、成员...'}}" value="{{searchQuery}}" bindinput="onSearchInput" />
       <view wx:if="{{searchQuery}}" class="search-clear" bindtap="onClearSearch">✕</view>
     </view>
 
@@ -42,8 +42,8 @@
           <view class="event-meta">
             <text class="event-time">{{item.timeText}}</text>
             <view class="event-tags">
-              <text class="tag-type {{item.type}}">{{item.type === 'family' ? '家庭' : '个人'}}</text>
-              <text class="tag-creator" style="color: {{item.creatorColor}};">{{item.creatorName}}</text>
+              <text wx:if="{{!reviewMode}}" class="tag-type {{item.type}}">{{item.type === 'family' ? '家庭' : '个人'}}</text>
+              <text wx:if="{{!reviewMode}}" class="tag-creator" style="color: {{item.creatorColor}};">{{item.creatorName}}</text>
             </view>
           </view>
           <view wx:if="{{item.location}}" class="event-location">📍 {{item.location}}</view>
@@ -136,9 +136,8 @@
                 <view wx:for="{{[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]}}" class="hour-bg-line"></view>
                 <view wx:for="{{weekEvents}}" wx:for-item="evt" wx:if="{{evt.dayIndex === dayIdx && !evt.isAllDay}}"
                   class="timeline-event"
-                  style="top: {{evt.top}}rpx; height: {{evt.height}}rpx; left: {{evt.left}}%; width: calc({{evt.width}}% - 4rpx); background-color: {{evt.color}};"
+                  style="top: {{evt.top}}rpx; height: {{evt.height}}rpx; left: {{evt.left}}%; width: {{evt.width}}%; background-color: {{evt.color}}; z-index: 1;"
                   bindtap="onEditEvent" data-id="{{evt._id}}">
-                  <text class="event-title-text">{{evt.title}}</text>
                 </view>
               </view>
             </view>
