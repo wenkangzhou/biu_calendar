@@ -1,26 +1,25 @@
-page {
-  background-color: #f5f6fa;
-}
+@import "../../styles/variables";
 
 .page {
   min-height: 100vh;
-  padding: 20rpx 20rpx 200rpx;
+  padding: 20rpx 24rpx 200rpx;
 }
 
 .loading {
   text-align: center;
   padding: 200rpx 0;
-  color: #999;
+  color: $text-tertiary;
 }
 
-/* 空状态 */
+/* ===== 空状态 ===== */
 .empty {
   text-align: center;
   padding: 200rpx 40rpx;
   .empty-title {
-    font-size: 36rpx;
-    color: #333;
+    font-size: $fs-title;
+    color: $text-primary;
     margin-bottom: 60rpx;
+    font-weight: 600;
   }
   .btn-group {
     display: flex;
@@ -30,64 +29,86 @@ page {
 }
 
 .btn-primary {
-  background: #4ECDC4;
-  color: #fff;
-  font-size: 30rpx;
-  padding: 20rpx 50rpx;
-  border-radius: 80rpx;
+  background: linear-gradient(135deg, $primary, $primary-dark);
+  color: $text-white;
+  font-size: $fs-small;
+  font-weight: 600;
+  padding: 22rpx 50rpx;
+  border-radius: $radius-md;
   border: none;
+  box-shadow: $shadow-primary;
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
 }
 
 .btn-secondary {
-  background: #fff;
-  color: #4ECDC4;
-  font-size: 30rpx;
-  padding: 20rpx 50rpx;
-  border-radius: 80rpx;
-  border: 2rpx solid #4ECDC4;
+  background: $bg-card;
+  color: $primary;
+  font-size: $fs-small;
+  font-weight: 600;
+  padding: 22rpx 50rpx;
+  border-radius: $radius-md;
+  border: 1rpx solid $primary-soft;
+  &:active {
+    background: $primary-light;
+  }
 }
 
 .btn-small {
-  background: #f0f0f0;
-  color: #666;
-  font-size: 24rpx;
-  padding: 10rpx 30rpx;
-  border-radius: 40rpx;
+  background: $bg-hover;
+  color: $text-secondary;
+  font-size: $fs-caption;
+  font-weight: 500;
+  padding: 12rpx 30rpx;
+  border-radius: $radius-lg;
   border: none;
   margin-top: 20rpx;
+  &:active {
+    background: $divider;
+  }
 }
 
 .btn-danger {
-  background: #fff;
-  color: #FF6B6B;
-  font-size: 30rpx;
-  padding: 20rpx 50rpx;
-  border-radius: 80rpx;
-  border: 2rpx solid #FF6B6B;
+  background: $bg-card;
+  color: $danger;
+  font-size: $fs-small;
+  font-weight: 500;
+  padding: 22rpx 50rpx;
+  border-radius: $radius-md;
+  border: 1rpx solid $danger;
   width: 100%;
+  &:active {
+    background: $danger-light;
+  }
 }
 
-/* 表单 */
+/* ===== 表单卡片 ===== */
 .form-card {
-  background: #fff;
-  margin: 30rpx 20rpx;
+  background: $bg-card;
+  margin: 30rpx 0;
   padding: 40rpx;
-  border-radius: 20rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.04);
+  border-radius: $radius-xl;
+  box-shadow: $shadow-sm;
   .form-title {
-    font-size: 32rpx;
-    font-weight: 600;
-    color: #333;
+    font-size: $fs-title;
+    font-weight: 700;
+    color: $text-primary;
     margin-bottom: 30rpx;
     text-align: center;
   }
   .form-input {
-    border: 1rpx solid #eee;
-    border-radius: 12rpx;
-    padding: 20rpx;
+    border: 1rpx solid $divider;
+    border-radius: $radius-md;
+    padding: 22rpx 24rpx;
     margin-bottom: 20rpx;
-    font-size: 28rpx;
-    background: #fafafa;
+    font-size: $fs-body;
+    background: $bg-page;
+    color: $text-primary;
+    &:focus {
+      border-color: $primary-soft;
+    }
   }
   .btn-primary {
     width: 100%;
@@ -95,97 +116,102 @@ page {
   }
 }
 
-/* 家庭卡片 */
+/* ===== 家庭卡片 ===== */
 .family-card {
-  background: #fff;
+  background: $bg-card;
   padding: 40rpx;
-  border-radius: 20rpx;
-  margin-bottom: 20rpx;
+  border-radius: $radius-xl;
+  margin-bottom: 24rpx;
   text-align: center;
+  box-shadow: $shadow-sm;
   .family-title {
     font-size: 40rpx;
-    font-weight: 600;
-    color: #333;
+    font-weight: 700;
+    color: $text-primary;
     margin-bottom: 30rpx;
   }
   .invite-box {
-    background: #f8f9fa;
-    border-radius: 16rpx;
+    background: $bg-page;
+    border-radius: $radius-lg;
     padding: 30rpx;
     .invite-label {
-      font-size: 24rpx;
-      color: #999;
+      font-size: $fs-caption;
+      color: $text-tertiary;
       margin-bottom: 10rpx;
+      font-weight: 500;
     }
     .invite-code {
       font-size: 56rpx;
       font-weight: 700;
-      color: #4ECDC4;
+      color: $primary;
       letter-spacing: 10rpx;
       &.empty {
-        font-size: 32rpx;
-        color: #bbb;
+        font-size: $fs-title;
+        color: $text-tertiary;
         letter-spacing: 0;
       }
     }
     .invite-tip {
-      font-size: 22rpx;
-      color: #bbb;
+      font-size: $fs-xs;
+      color: $text-tertiary;
       margin-top: 10rpx;
     }
   }
 }
 
-/* 成员卡片 */
+/* ===== 成员卡片 ===== */
 .member-card {
-  background: #fff;
+  background: $bg-card;
   padding: 30rpx;
-  border-radius: 20rpx;
-  margin-bottom: 20rpx;
+  border-radius: $radius-xl;
+  margin-bottom: 24rpx;
+  box-shadow: $shadow-sm;
   .card-title {
-    font-size: 30rpx;
-    font-weight: 600;
-    color: #333;
+    font-size: $fs-body;
+    font-weight: 700;
+    color: $text-primary;
     margin-bottom: 20rpx;
   }
   .member-item {
     display: flex;
     align-items: center;
     padding: 20rpx 0;
-    border-bottom: 1rpx solid #f5f5f5;
+    border-bottom: 1rpx solid $divider;
+    transition: $transition-fast;
     &:last-child { border-bottom: none; }
-    &.editable:active { background: #f9f9f9; }
+    &.editable:active { background: $bg-hover; }
     .member-avatar {
       width: 80rpx;
       height: 80rpx;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
+      border-radius: $radius-full;
+      text-align: center;
+      line-height: 80rpx;
+      color: $text-white;
       font-size: 32rpx;
       margin-right: 20rpx;
+      flex-shrink: 0;
     }
     .member-info {
       flex: 1;
       .member-name {
-        font-size: 30rpx;
-        color: #333;
-        font-weight: 500;
+        font-size: $fs-body;
+        color: $text-primary;
+        font-weight: 600;
       }
       .member-tag {
-        font-size: 24rpx;
-        color: #999;
+        font-size: $fs-caption;
+        color: $text-tertiary;
         margin-top: 6rpx;
       }
     }
     .edit-hint {
-      font-size: 24rpx;
-      color: #4A90D9;
+      font-size: $fs-caption;
+      color: $primary;
+      font-weight: 500;
     }
   }
 }
 
 .danger-zone {
-  padding: 20rpx;
+  padding: 20rpx 0;
 }

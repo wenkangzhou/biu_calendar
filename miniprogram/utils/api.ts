@@ -17,7 +17,7 @@ function removeToken() {
   wx.removeStorageSync('token')
 }
 
-function request<T = any>(method: string, url: string, data?: any): Promise<T> {
+export function request<T = any>(method: string, url: string, data?: any): Promise<T> {
   return new Promise((resolve, reject) => {
     wx.request({
       url: API_BASE + url,

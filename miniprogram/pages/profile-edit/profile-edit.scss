@@ -1,14 +1,12 @@
-page {
-  background-color: #f5f6fa;
-}
+@import "../../styles/variables";
 
 .page {
   padding: 20rpx 30rpx 60rpx;
 }
 
 .notice-bar {
-  background: #e8f4f8;
-  border-radius: 12rpx;
+  background: $primary-light;
+  border-radius: $radius-md;
   padding: 20rpx 24rpx;
   display: flex;
   align-items: center;
@@ -19,19 +17,20 @@ page {
     flex-shrink: 0;
   }
   .notice-text {
-    font-size: 26rpx;
-    color: #4A90D9;
+    font-size: $fs-small;
+    color: $primary;
     line-height: 1.5;
+    font-weight: 500;
   }
 }
 
 .section-title {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #333;
+  font-size: $fs-body;
+  font-weight: 700;
+  color: $text-primary;
   margin: 30rpx 0 20rpx;
   .required {
-    color: #FF6B6B;
+    color: $danger;
   }
 }
 
@@ -44,16 +43,18 @@ page {
 .emoji-item {
   width: 120rpx;
   height: 120rpx;
-  border-radius: 20rpx;
+  border-radius: $radius-lg;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  transition: $transition-fast;
   .emoji-text {
     font-size: 56rpx;
   }
   &.selected {
-    box-shadow: 0 0 0 4rpx #4A90D9;
+    box-shadow: 0 0 0 4rpx $primary;
+    transform: scale(1.05);
   }
   .check-mark {
     position: absolute;
@@ -61,10 +62,10 @@ page {
     right: 4rpx;
     width: 32rpx;
     height: 32rpx;
-    background: #4A90D9;
-    color: #fff;
+    background: $primary;
+    color: $text-white;
     font-size: 20rpx;
-    border-radius: 50%;
+    border-radius: $radius-full;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -72,57 +73,69 @@ page {
 }
 
 .name-input {
-  background: #fff;
-  border-radius: 12rpx;
+  background: $bg-card;
+  border-radius: $radius-md;
   padding: 24rpx;
-  font-size: 30rpx;
-  border: 2rpx solid #eee;
+  font-size: $fs-body;
+  border: 1rpx solid $divider;
+  color: $text-primary;
+  &:focus {
+    border-color: $primary-soft;
+  }
 }
 
 .input-tip {
-  font-size: 24rpx;
-  color: #999;
+  font-size: $fs-caption;
+  color: $text-tertiary;
   margin-top: 12rpx;
 }
 
 .preview-card {
-  background: #fff;
-  border-radius: 16rpx;
+  background: $bg-card;
+  border-radius: $radius-lg;
   padding: 30rpx;
   display: flex;
   align-items: center;
-  border: 2rpx dashed #ddd;
+  border: 2rpx dashed $divider;
   .preview-avatar {
     width: 80rpx;
     height: 80rpx;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border-radius: $radius-full;
+    text-align: center;
+    line-height: 80rpx;
     font-size: 40rpx;
     margin-right: 20rpx;
   }
   .preview-name {
-    font-size: 32rpx;
-    color: #333;
-    font-weight: 500;
+    font-size: $fs-title;
+    color: $text-primary;
+    font-weight: 600;
   }
 }
 
 .btn-primary {
-  background: #4A90D9;
-  color: #fff;
-  font-size: 32rpx;
-  padding: 24rpx 0;
-  border-radius: 80rpx;
+  background: linear-gradient(135deg, $primary, $primary-dark);
+  color: $text-white;
+  font-size: $fs-body;
+  font-weight: 600;
+  padding: 28rpx 0;
+  border-radius: $radius-md;
   border: none;
   margin-top: 40rpx;
   width: 100%;
+  box-shadow: $shadow-primary;
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
 }
 
 .skip-link {
   text-align: center;
-  font-size: 28rpx;
-  color: #999;
+  font-size: $fs-body;
+  color: $text-tertiary;
   margin-top: 30rpx;
+  &:active {
+    color: $text-secondary;
+  }
 }

@@ -1,37 +1,131 @@
+@import "../../styles/variables";
+
 page {
-  background-color: #f5f6fa;
+  background-color: $bg-page;
 }
 
 .page {
   min-height: 100vh;
-  padding-bottom: 200rpx;
+  padding-bottom: 180rpx;
 }
 
-/* 空状态 */
+/* ===== 顶部家庭栏 ===== */
+.family-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 30rpx;
+  .family-name {
+    font-size: $fs-heading;
+    font-weight: 600;
+    color: $text-primary;
+  }
+  .family-members {
+    display: flex;
+    align-items: center;
+    .fam-avatar {
+      width: 48rpx;
+      height: 48rpx;
+      border-radius: $radius-full;
+      text-align: center;
+      line-height: 48rpx;
+      color: $text-white;
+      // font-size: 22rpx;
+      margin-left: -12rpx;
+      border: 2rpx solid $bg-page;
+      &:first-child { margin-left: 0; }
+    }
+  }
+}
+
+/* ===== 搜索栏 ===== */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: $bg-card;
+  margin: 0 24rpx 12rpx;
+  padding: 12rpx 24rpx;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  .search-icon {
+    font-size: 28rpx;
+    margin-right: 12rpx;
+    opacity: 0.5;
+  }
+  .search-input {
+    flex: 1;
+    font-size: $fs-small;
+    color: $text-primary;
+    height: 44rpx;
+    line-height: 44rpx;
+  }
+  .search-clear {
+    font-size: 24rpx;
+    color: $text-tertiary;
+    padding: 8rpx;
+    margin-left: 8rpx;
+    &:active {
+      color: $text-secondary;
+    }
+  }
+}
+
+/* ===== 搜索结果 ===== */
+.search-results {
+  margin: 0 24rpx;
+  .search-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60rpx 0;
+    background: $bg-card;
+    border-radius: $radius-xl;
+    box-shadow: $shadow-sm;
+    .empty-icon {
+      font-size: 80rpx;
+      margin-bottom: 20rpx;
+      opacity: 0.25;
+    }
+    .empty-text {
+      font-size: $fs-body;
+      color: $text-secondary;
+      font-weight: 500;
+    }
+  }
+}
+
+/* ===== 空状态 ===== */
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-top: 300rpx;
+  padding-top: 280rpx;
+  .empty-icon {
+    font-size: 120rpx;
+    margin-bottom: 30rpx;
+    opacity: 0.25;
+  }
   .empty-title {
-    font-size: 40rpx;
+    font-size: $fs-title;
     font-weight: 600;
-    color: #333;
-    margin-bottom: 20rpx;
+    color: $text-primary;
+    margin-bottom: 16rpx;
   }
   .empty-desc {
-    font-size: 28rpx;
-    color: #999;
-    margin-bottom: 60rpx;
+    font-size: $fs-body;
+    color: $text-tertiary;
+    margin-bottom: 48rpx;
   }
   .btn-primary {
-    background: #4A90D9;
-    color: #fff;
-    font-size: 32rpx;
-    padding: 20rpx 60rpx;
-    border-radius: 80rpx;
+    background: linear-gradient(135deg, $primary, $primary-dark);
+    color: $text-white;
+    font-size: $fs-body;
+    padding: 24rpx 72rpx;
+    border-radius: $radius-md;
     border: none;
+    box-shadow: $shadow-primary;
   }
 }
 
@@ -41,65 +135,110 @@ page {
   justify-content: center;
   padding-top: 300rpx;
   .loading-text {
-    color: #999;
-    font-size: 28rpx;
+    color: $text-tertiary;
+    font-size: $fs-body;
   }
 }
 
-/* 日历卡片 */
+/* ===== 日历卡片 ===== */
 .calendar-card {
-  background: #fff;
-  margin: 20rpx;
-  border-radius: 20rpx;
-  padding: 20rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.04);
+  background: $bg-card;
+  margin: 0 24rpx 12rpx;
+  border-radius: $radius-xl;
+  padding: 16rpx 20rpx;
+  box-shadow: $shadow-sm;
 }
 
 .calendar-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10rpx 0 20rpx;
+  padding-bottom: 12rpx;
   .month-nav {
     display: flex;
     align-items: center;
+    gap: 8rpx;
   }
   .nav-btn {
-    width: 60rpx;
-    height: 60rpx;
+    width: 48rpx;
+    height: 48rpx;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 40rpx;
-    color: #666;
+    font-size: 32rpx;
+    color: $text-secondary;
+    background: $bg-page;
+    border-radius: $radius-lg;
+    transition: $transition-fast;
+    &:active {
+      background: $bg-hover;
+      transform: scale(0.95);
+    }
   }
   .month-title {
     font-size: 32rpx;
-    font-weight: 600;
-    color: #333;
-    min-width: 180rpx;
+    font-weight: 700;
+    color: $text-primary;
+    min-width: 140rpx;
     text-align: center;
+    white-space: nowrap;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10rpx;
+    flex-shrink: 0;
   }
   .today-btn {
-    background: #4A90D9;
-    color: #fff;
-    font-size: 24rpx;
-    padding: 10rpx 24rpx;
-    border-radius: 30rpx;
+    background: $primary-light;
+    color: $primary;
+    font-size: $fs-small;
+    font-weight: 500;
+    padding: 8rpx 16rpx;
+    border-radius: $radius-lg;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: $transition-fast;
+    &:active {
+      background: #DBEAFE;
+    }
+  }
+}
+
+/* 视图切换 Tab */
+.view-tabs {
+  display: flex;
+  background: $bg-page;
+  border-radius: $radius-lg;
+  padding: 3rpx;
+  .tab-item {
+    font-size: $fs-small;
+    color: $text-secondary;
+    padding: 6rpx 14rpx;
+    border-radius: $radius-md;
+    font-weight: 500;
+    transition: $transition-fast;
+    &.active {
+      background: $bg-card;
+      color: $primary;
+      box-shadow: $shadow-sm;
+      font-weight: 600;
+    }
   }
 }
 
 .weekdays {
   display: flex;
-  padding: 10rpx 0;
-  border-bottom: 1rpx solid #f0f0f0;
+  padding: 8rpx 0;
+  border-bottom: 1rpx solid $divider;
   .weekday {
     flex: 1;
     text-align: center;
-    font-size: 24rpx;
-    color: #666;
+    font-size: $fs-caption;
+    color: $text-secondary;
+    font-weight: 500;
     &.weekend {
-      color: #FF6B6B;
+      color: $holiday;
     }
   }
 }
@@ -107,96 +246,105 @@ page {
 .days-grid {
   display: flex;
   flex-wrap: wrap;
-  padding-top: 10rpx;
+  padding-top: 8rpx;
 }
 
 .day-cell {
   width: 14.28%;
-  height: 130rpx;
+  height: 96rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: 4rpx 0;
+  padding: 2rpx 0;
 
   .day-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    width: 70rpx;
-    height: 110rpx;
-    border-radius: 16rpx;
-    padding-top: 6rpx;
+    width: 64rpx;
+    height: 84rpx;
+    border-radius: $radius-lg;
+    padding-top: 4rpx;
+    transition: $transition-fast;
   }
 
   .day-num {
-    font-size: 28rpx;
-    color: #333;
-    line-height: 36rpx;
+    font-size: 26rpx;
+    color: $text-primary;
+    line-height: 34rpx;
     text-align: center;
+    font-weight: 500;
+    width: 34rpx;
+    height: 34rpx;
+    border-radius: $radius-full;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     &.holiday-num {
-      color: #FF6B6B;
+      color: $holiday;
     }
     &.work-num {
-      color: #4A90D9;
+      color: $work;
+    }
+  }
+
+  .lunar-text {
+    font-size: 16rpx;
+    color: $text-tertiary;
+    margin-top: 2rpx;
+    line-height: 20rpx;
+    text-align: center;
+    max-width: 60rpx;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 400;
+    &.small {
+      font-size: 13rpx;
+    }
+    &.holiday {
+      color: $holiday;
+      font-weight: 500;
+    }
+    &.work {
+      color: $work;
+      font-weight: 500;
     }
   }
 
   .dots-row {
     display: flex;
-    margin-top: 4rpx;
-    height: 14rpx;
+    margin-top: 2rpx;
+    height: 12rpx;
     align-items: center;
     justify-content: center;
     .day-dot {
-      width: 10rpx;
-      height: 10rpx;
-      border-radius: 50%;
+      width: 6rpx;
+      height: 6rpx;
+      border-radius: $radius-full;
       margin: 0 2rpx;
     }
   }
 
   .day-bar-placeholder {
     width: 40rpx;
-    height: 14rpx;
-    margin-top: 4rpx;
-  }
-
-  .lunar-text {
-    font-size: 16rpx;
-    color: #999;
+    height: 12rpx;
     margin-top: 2rpx;
-    line-height: 20rpx;
-    text-align: center;
-    max-width: 66rpx;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    &.small {
-      font-size: 14rpx;
-    }
-    &.holiday {
-      color: #FF6B6B;
-    }
-    &.work {
-      color: #4A90D9;
-    }
   }
 
+  /* 今天：主蓝圆形 */
   &.today .day-num {
-    color: #4A90D9;
-    font-weight: 700;
+    background: $primary;
+    color: $text-white;
+    font-weight: 600;
   }
 
+  /* 选中：浅蓝背景 */
   &.selected .day-content {
-    background: #E8F1FA;
-  }
-
-  &.selected .day-num {
-    color: #4A90D9;
-    font-weight: 700;
+    background: $primary-light;
   }
 
   &.empty {
@@ -204,26 +352,171 @@ page {
   }
 }
 
-/* 当日日程 */
+/* ===== 周视图 ===== */
+.week-day-header {
+  display: flex;
+  border-bottom: 1rpx solid $divider;
+  padding-bottom: 8rpx;
+  .week-corner {
+    width: 52rpx;
+    flex-shrink: 0;
+  }
+  .week-day-cell {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6rpx 0;
+    border-radius: $radius-lg;
+    transition: $transition-fast;
+    &:active {
+      background: $bg-hover;
+    }
+    .week-day-name {
+      font-size: $fs-xs;
+      color: $text-tertiary;
+      margin-bottom: 2rpx;
+    }
+    .week-day-num {
+      font-size: $fs-body;
+      color: $text-primary;
+      font-weight: 600;
+      width: 40rpx;
+      height: 40rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: $radius-full;
+    }
+    &.today .week-day-num {
+      background: $primary;
+      color: $text-white;
+    }
+    &.selected {
+      background: $primary-light;
+    }
+  }
+}
+
+.allday-area {
+  display: flex;
+  align-items: flex-start;
+  border-bottom: 1rpx solid $divider;
+  padding: 6rpx 0;
+  min-height: 40rpx;
+  .allday-label {
+    width: 52rpx;
+    flex-shrink: 0;
+    font-size: $fs-xs;
+    color: $text-tertiary;
+    text-align: center;
+    padding-top: 4rpx;
+  }
+  .allday-columns {
+    flex: 1;
+    display: flex;
+    .allday-column {
+      flex: 1;
+      padding: 0 2rpx;
+      .allday-event {
+        font-size: $fs-xs;
+        color: $text-white;
+        padding: 3rpx 6rpx;
+        border-radius: $radius-sm;
+        margin-bottom: 2rpx;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
+.week-timeline-scroll {
+  height: 320rpx;
+  .week-timeline {
+    display: flex;
+    position: relative;
+    height: 1140rpx;
+    .hour-labels {
+      width: 52rpx;
+      flex-shrink: 0;
+      .hour-label {
+        height: 60rpx;
+        font-size: $fs-xs;
+        color: $text-tertiary;
+        text-align: center;
+        line-height: 1;
+        padding-top: 4rpx;
+      }
+    }
+    .timeline-columns {
+      flex: 1;
+      display: flex;
+      position: relative;
+      .timeline-column {
+        flex: 1;
+        position: relative;
+        border-right: 1rpx solid $divider;
+        &:last-child {
+          border-right: none;
+        }
+        .hour-bg-line {
+          height: 60rpx;
+          border-bottom: 1rpx dashed $divider;
+          box-sizing: border-box;
+        }
+        .timeline-event {
+          position: absolute;
+          border-radius: $radius-sm;
+          padding: 3rpx 5rpx;
+          box-sizing: border-box;
+          overflow: hidden;
+          .event-title-text {
+            font-size: $fs-xs;
+            color: $text-white;
+            font-weight: 500;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* ===== 当日日程 ===== */
 .daily-events {
-  background: #fff;
-  margin: 20rpx;
-  border-radius: 20rpx;
-  padding: 30rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.04);
-  min-height: 300rpx;
+  margin: 0 24rpx;
 
   .section-header {
-    margin-bottom: 20rpx;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16rpx;
     .section-title {
-      font-size: 32rpx;
-      font-weight: 600;
-      color: #333;
+      font-size: $fs-title;
+      font-weight: 700;
+      color: $text-primary;
     }
     .weekday-text {
-      font-size: 28rpx;
-      color: #999;
-      font-weight: normal;
+      font-size: $fs-body;
+      color: $text-tertiary;
+      font-weight: 400;
+    }
+    .add-btn-small {
+      background: $primary-light;
+      color: $primary;
+      font-size: $fs-small;
+      font-weight: 500;
+      padding: 6rpx 16rpx;
+      border-radius: $radius-lg;
+      &:active {
+        background: #DBEAFE;
+      }
     }
   }
 }
@@ -233,108 +526,182 @@ page {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 80rpx 0;
+  padding: 40rpx 0;
+  background: $bg-card;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-sm;
   .empty-icon {
-    font-size: 100rpx;
-    margin-bottom: 20rpx;
-    opacity: 0.3;
+    font-size: 80rpx;
+    margin-bottom: 16rpx;
+    opacity: 0.25;
   }
   .empty-title {
-    font-size: 30rpx;
-    color: #999;
-    margin-bottom: 12rpx;
+    font-size: $fs-body;
+    color: $text-secondary;
+    margin-bottom: 6rpx;
+    font-weight: 500;
   }
   .empty-desc {
-    font-size: 26rpx;
-    color: #bbb;
+    font-size: $fs-caption;
+    color: $text-tertiary;
   }
 }
 
-.event-item {
+/* 日程卡片 */
+.event-card {
+  background: $bg-card;
+  border-radius: $radius-lg;
+  padding: 20rpx;
+  margin-bottom: 12rpx;
+  box-shadow: $shadow-sm;
   display: flex;
   align-items: flex-start;
-  padding: 20rpx 0;
-  border-bottom: 1rpx solid #f5f5f5;
-  &:last-child { border-bottom: none; }
-  .event-avatar {
-    width: 64rpx;
-    height: 64rpx;
-    border-radius: 50%;
+  transition: $transition-fast;
+  &:active {
+    transform: scale(0.98);
+    box-shadow: $shadow-md;
+  }
+  &:last-child { margin-bottom: 0; }
+
+  .event-check {
+    padding-right: 14rpx;
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 28rpx;
-    margin-right: 20rpx;
+    align-self: stretch;
+    .check-circle {
+      width: 36rpx;
+      height: 36rpx;
+      border-radius: $radius-full;
+      border: 2rpx solid $divider;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: $transition-fast;
+      flex-shrink: 0;
+      &.checked {
+        background: $primary;
+        border-color: $primary;
+        color: $text-white;
+        font-size: 20rpx;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .event-avatar {
+    width: 56rpx;
+    height: 56rpx;
+    border-radius: $radius-full;
+    text-align: center;
+    line-height: 56rpx;
+    color: $text-white;
+    font-size: 24rpx;
+    margin-right: 16rpx;
     flex-shrink: 0;
   }
-  .event-bar {
-    width: 8rpx;
-    height: 80rpx;
-    border-radius: 4rpx;
-    margin-right: 20rpx;
-    flex-shrink: 0;
-  }
+
   .event-body {
     flex: 1;
+    min-width: 0;
     .event-title {
-      font-size: 30rpx;
-      color: #333;
-      font-weight: 500;
-      margin-bottom: 8rpx;
+      font-size: $fs-body;
+      color: $text-primary;
+      font-weight: 600;
+      margin-bottom: 6rpx;
+      line-height: 1.4;
     }
     .event-meta {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 12rpx;
+      gap: 10rpx;
+      margin-bottom: 4rpx;
       .event-time {
-        font-size: 24rpx;
-        color: #999;
+        font-size: $fs-caption;
+        color: $text-tertiary;
       }
       .event-tags {
         display: flex;
-        gap: 10rpx;
+        gap: 8rpx;
         .tag-type {
-          padding: 2rpx 10rpx;
-          border-radius: 8rpx;
-          font-size: 20rpx;
+          padding: 3rpx 10rpx;
+          border-radius: $radius-sm;
+          font-size: $fs-xs;
+          font-weight: 500;
           &.family {
-            background: #e6f0fa;
-            color: #4A90D9;
+            background: $primary-light;
+            color: $primary;
           }
           &.personal {
-            background: #fff0f0;
-            color: #FF6B6B;
+            background: $danger-light;
+            color: $danger;
           }
         }
         .tag-creator {
-          font-size: 22rpx;
+          font-size: $fs-small;
           font-weight: 500;
         }
       }
     }
     .event-location {
-      font-size: 24rpx;
-      color: #bbb;
-      margin-top: 8rpx;
+      font-size: $fs-caption;
+      color: $text-tertiary;
+      margin-top: 2rpx;
+      display: flex;
+      align-items: center;
+      gap: 4rpx;
+    }
+  }
+
+  &.done {
+    opacity: 0.6;
+    .event-body {
+      .event-title {
+        text-decoration: line-through;
+        color: $text-tertiary;
+      }
+    }
+    .event-avatar {
+      opacity: 0.5;
     }
   }
 }
 
-/* 悬浮按钮 */
-.fab {
+/* ===== 底部创建栏 ===== */
+.bottom-bar {
   position: fixed;
-  right: 40rpx;
-  bottom: 260rpx;
-  width: 100rpx;
-  height: 100rpx;
-  background: #4A90D9;
-  color: #fff;
-  font-size: 48rpx;
-  line-height: 100rpx;
-  text-align: center;
-  border-radius: 50%;
-  box-shadow: 0 8rpx 30rpx rgba(74, 144, 217, 0.4);
-  z-index: 9999;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 16rpx 30rpx calc(16rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, rgba(255,255,255,0.95), rgba(255,255,255,0.8));
+  backdrop-filter: blur(10rpx);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .btn-create {
+    flex: 1;
+    max-width: 600rpx;
+    background: linear-gradient(135deg, $primary, $primary-dark);
+    color: $text-white;
+    font-size: $fs-body;
+    font-weight: 600;
+    padding: 24rpx 0;
+    border-radius: $radius-md;
+    border: none;
+    box-shadow: $shadow-primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12rpx;
+    &:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+    .btn-icon {
+      font-size: 36rpx;
+      line-height: 1;
+    }
+  }
 }

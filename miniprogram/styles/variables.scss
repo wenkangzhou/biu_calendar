@@ -1,0 +1,60 @@
+// ==========================================
+// 设计系统变量
+// ==========================================
+
+// ----- 品牌色 -----
+$primary: #3B82F6;
+$primary-dark: #2563EB;
+$primary-light: #EFF6FF;
+$primary-soft: #DBEAFE;
+
+$success: #10B981;
+$success-light: #ECFDF5;
+
+$warning: #F59E0B;
+$warning-light: #FFFBEB;
+
+$danger: #EF4444;
+$danger-light: #FEF2F2;
+
+// ----- 中性色 -----
+$text-primary: #1F2937;
+$text-secondary: #6B7280;
+$text-tertiary: #9CA3AF;
+$text-white: #FFFFFF;
+
+$bg-page: #F8F9FB;
+$bg-card: #FFFFFF;
+$bg-hover: #F3F4F6;
+$bg-mask: rgba(0, 0, 0, 0.5);
+
+$divider: #F3F4F6;
+
+// ----- 节假日颜色 -----
+$holiday: #EF4444;
+$work: #3B82F6;
+
+// ----- 字号 -----
+$fs-heading: 36rpx;   // 大标题
+$fs-title: 32rpx;     // 标题
+$fs-body: 30rpx;      // 正文
+$fs-small: 26rpx;     // 小字
+$fs-caption: 24rpx;   // 辅助文字
+$fs-xs: 20rpx;        // 极小字
+
+// ----- 圆角 -----
+$radius-sm: 8rpx;
+$radius-md: 16rpx;
+$radius-lg: 20rpx;
+$radius-xl: 24rpx;
+$radius-full: 50%;
+
+// ----- 阴影 -----
+$shadow-sm: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+$shadow-md: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 8rpx 32rpx rgba(0, 0, 0, 0.08);
+$shadow-primary: 0 6rpx 20rpx rgba(59, 130, 246, 0.3);
+
+// ----- 动画 -----
+$transition-fast: all 0.15s ease;
+$transition-normal: all 0.25s ease;

@@ -88,10 +88,10 @@ Page({
     })
   },
 
-  onShareAppMessage() {
-    return {
-      title: '家庭共享日历',
-      path: '/pages/index/index'
-    }
-  }
+  // onShareAppMessage() {
+  //   return {
+  //     title: '家庭共享日历',
+  //     path: '/pages/index/index'
+  //   }
+  // }
 })

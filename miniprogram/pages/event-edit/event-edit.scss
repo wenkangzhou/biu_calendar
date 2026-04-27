@@ -1,45 +1,54 @@
-page {
-  background-color: #f5f6fa;
-}
+@import "../../styles/variables";
 
 .page {
-  padding: 20rpx;
-  padding-bottom: 60rpx;
+  padding: 20rpx 24rpx 60rpx;
 }
 
 .form-group {
-  background: #fff;
-  border-radius: 16rpx;
+  background: $bg-card;
+  border-radius: $radius-lg;
   padding: 30rpx;
   margin-bottom: 20rpx;
+  box-shadow: $shadow-sm;
+
   .form-label {
-    font-size: 28rpx;
-    color: #666;
+    font-size: $fs-small;
+    color: $text-secondary;
     margin-bottom: 16rpx;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    font-weight: 500;
   }
+
   .form-input {
-    border: 1rpx solid #eee;
-    border-radius: 12rpx;
-    padding: 20rpx;
-    font-size: 30rpx;
-    background: #fafafa;
+    border: 1rpx solid $divider;
+    border-radius: $radius-md;
+    padding: 22rpx 24rpx;
+    font-size: $fs-body;
+    background: $bg-page;
+    color: $text-primary;
+    transition: $transition-fast;
+    &:focus {
+      border-color: $primary-soft;
+    }
   }
+
   .form-textarea {
-    border: 1rpx solid #eee;
-    border-radius: 12rpx;
-    padding: 20rpx;
-    font-size: 30rpx;
-    background: #fafafa;
+    border: 1rpx solid $divider;
+    border-radius: $radius-md;
+    padding: 22rpx 24rpx;
+    font-size: $fs-body;
+    background: $bg-page;
+    color: $text-primary;
     width: 100%;
     height: 160rpx;
     box-sizing: border-box;
   }
+
   .form-tip {
-    font-size: 24rpx;
-    color: #4ECDC4;
+    font-size: $fs-caption;
+    color: $primary;
     margin-top: 10rpx;
   }
 }
@@ -50,8 +59,9 @@ page {
   .radio-item {
     display: flex;
     align-items: center;
-    font-size: 30rpx;
-    color: #333;
+    font-size: $fs-body;
+    color: $text-primary;
+    font-weight: 500;
     radio {
       margin-right: 10rpx;
     }
@@ -67,28 +77,29 @@ page {
     flex-direction: column;
     align-items: center;
     padding: 16rpx 24rpx;
-    border-radius: 16rpx;
-    background: #f5f5f5;
-    opacity: 0.5;
+    border-radius: $radius-lg;
+    background: $bg-page;
+    opacity: 0.4;
+    transition: $transition-fast;
     &.active {
       opacity: 1;
-      background: #e6f7f6;
-      box-shadow: 0 0 0 2rpx #4ECDC4;
+      background: $primary-light;
+      box-shadow: 0 0 0 2rpx $primary-soft;
     }
     .p-avatar {
       width: 64rpx;
       height: 64rpx;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
+      border-radius: $radius-full;
+      text-align: center;
+      line-height: 64rpx;
+      color: $text-white;
       font-size: 28rpx;
       margin-bottom: 8rpx;
     }
     .p-name {
-      font-size: 24rpx;
-      color: #333;
+      font-size: $fs-caption;
+      color: $text-primary;
+      font-weight: 500;
     }
   }
 }
@@ -97,36 +108,47 @@ page {
   display: flex;
   gap: 20rpx;
   .picker-value {
-    background: #fafafa;
-    border: 1rpx solid #eee;
-    border-radius: 12rpx;
-    padding: 20rpx 30rpx;
-    font-size: 30rpx;
-    color: #333;
+    background: $bg-page;
+    border: 1rpx solid $divider;
+    border-radius: $radius-md;
+    padding: 22rpx 30rpx;
+    font-size: $fs-body;
+    color: $text-primary;
     min-width: 180rpx;
     text-align: center;
+    font-weight: 500;
   }
 }
 
 .btn-group {
   margin-top: 40rpx;
   .btn-primary {
-    background: #4ECDC4;
-    color: #fff;
-    font-size: 32rpx;
-    padding: 24rpx 0;
-    border-radius: 80rpx;
+    background: linear-gradient(135deg, $primary, $primary-dark);
+    color: $text-white;
+    font-size: $fs-body;
+    font-weight: 600;
+    padding: 28rpx 0;
+    border-radius: $radius-md;
     border: none;
     margin-bottom: 20rpx;
     width: 100%;
+    box-shadow: $shadow-primary;
+    &:active {
+      opacity: 0.9;
+      transform: scale(0.98);
+    }
   }
   .btn-danger {
-    background: #fff;
-    color: #FF6B6B;
-    font-size: 32rpx;
-    padding: 24rpx 0;
-    border-radius: 80rpx;
-    border: 2rpx solid #FF6B6B;
+    background: $bg-card;
+    color: $danger;
+    font-size: $fs-body;
+    font-weight: 500;
+    padding: 28rpx 0;
+    border-radius: $radius-md;
+    border: 1rpx solid $danger;
     width: 100%;
+    &:active {
+      background: $danger-light;
+    }
   }
 }

@@ -37,6 +37,52 @@ function rowToEvent(row) {
   }
 }
 
+// GET /api/events/search?q=xxx
+router.get('/search', async (ctx) => {
+  const { openid } = ctx.state.user
+  const { q } = ctx.query
+  if (!q || !q.trim()) {
+    ctx.body = { code: 400, msg: '搜索词不能为空' }
+    return
+  }
+
+  const family = await getFamilyByMember(openid)
+  if (!family) {
+    ctx.body = { code: 404, msg: '未加入任何家庭' }
+    return
+  }
+
+  const keyword = q.trim()
+  const rows = await all(
+    `SELECT * FROM events WHERE family_id = ? AND (instr(title, ?) > 0 OR instr(location, ?) > 0 OR instr(remark, ?) > 0) ORDER BY start_time DESC`,
+    [family.id, keyword, keyword, keyword]
+  )
+
+  // 按成员昵称搜索
+  const members = family.members || []
+  const matchedMembers = members.filter(m => m.nickName && m.nickName.includes(q.trim()))
+  let memberRows = []
+  if (matchedMembers.length > 0) {
+    const openids = matchedMembers.map(m => m.openid)
+    const placeholders = openids.map(() => '?').join(',')
+    memberRows = await all(
+      `SELECT * FROM events WHERE family_id = ? AND creator_openid IN (${placeholders})`,
+      [family.id, ...openids]
+    )
+  }
+
+  const seen = new Set()
+  const results = []
+  for (const row of [...rows, ...memberRows]) {
+    if (!seen.has(row.id)) {
+      seen.add(row.id)
+      results.push(rowToEvent(row))
+    }
+  }
+
+  ctx.body = { code: 200, data: results }
+})
+
 // GET /api/events?year=2026&month=4  或 ?date=2026-04-22  或 ?stats=1
 router.get('/', async (ctx) => {
   const { openid } = ctx.state.user

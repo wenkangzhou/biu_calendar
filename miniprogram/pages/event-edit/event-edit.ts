@@ -218,11 +218,11 @@ Page({
     return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
   },
 
-  onShareAppMessage() {
-    const { title, isEdit } = this.data
-    return {
-      title: isEdit ? `日程：${title || '家庭日程'}` : '新建家庭日程',
-      path: '/pages/index/index'
-    }
-  }
+  // onShareAppMessage() {
+  //   const { title, isEdit } = this.data
+  //   return {
+  //     title: isEdit ? `日程：${title || '家庭日程'}` : '新建家庭日程',
+  //     path: '/pages/index/index'
+  //   }
+  // }
 })

@@ -283,18 +283,18 @@ Page({
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
   },
 
-  onShareAppMessage() {
-    const { family } = this.data
-    if (family) {
-      return {
-        title: `加入${family.name}的家庭日历`,
-        path: '/pages/family/family',
-        desc: `邀请码：${family.inviteCode || ''}`
-      }
-    }
-    return {
-      title: '家庭共享日历',
-      path: '/pages/family/family'
-    }
-  }
+  // onShareAppMessage() {
+  //   const { family } = this.data
+  //   if (family) {
+  //     return {
+  //       title: `加入${family.name}的家庭日历`,
+  //       path: '/pages/family/family',
+  //       desc: `邀请码：${family.inviteCode || ''}`
+  //     }
+  //   }
+  //   return {
+  //     title: '家庭共享日历',
+  //     path: '/pages/family/family'
+  //   }
+  // }
 })
