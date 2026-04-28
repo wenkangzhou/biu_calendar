@@ -9,20 +9,12 @@ const ALL_TABS = [
 Component({
   data: {
     selected: 0,
-    reviewMode: true,
+    reviewMode: false,
     list: ALL_TABS
   },
   lifetimes: {
     attached() {
-      const reviewMode = app.globalData.reviewMode || false
-      // 根据当前页面路径匹配 selected，避免 index 错位
-      const pages = getCurrentPages()
-      const currentPath = pages.length > 0 ? '/' + pages[pages.length - 1].route : ''
-      const idx = ALL_TABS.findIndex(t => t.pagePath === currentPath)
-      this.setData({
-        reviewMode,
-        selected: idx >= 0 ? idx : 0
-      })
+      this.setData({ reviewMode: app.globalData.reviewMode })
     }
   },
   methods: {

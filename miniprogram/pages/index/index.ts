@@ -19,7 +19,6 @@ Page({
     familyMembers: [] as any[],
     hasFamily: false,
     loading: true,
-    reviewMode: true,
     viewMode: 'month' as 'month' | 'week',
     weekDays: [] as any[],
     weekEvents: [] as any[],
@@ -35,7 +34,7 @@ Page({
       today,
       selectedDate: today,
       weekdayText: this.getWeekdayText(new Date()),
-      reviewMode: app.globalData.reviewMode || false
+      reviewMode: app.globalData.reviewMode
     })
     this.buildCalendar()
 
@@ -47,9 +46,9 @@ Page({
   },
 
   async onShow() {
-    this.setData({ reviewMode: app.globalData.reviewMode || false })
+    this.setData({ reviewMode: app.globalData.reviewMode })
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({ reviewMode: app.globalData.reviewMode || false })
+      this.getTabBar().setData({ selected: 0, reviewMode: app.globalData.reviewMode })
     }
     await this.loadFamilyAndEvents()
   },

@@ -8,7 +8,6 @@ Page({
     family: null as any,
     hasFamily: false,
     myColor: '#7DD3C0',
-    reviewMode: true,
     stats: {
       total: 0,
       today: 0,
@@ -18,7 +17,8 @@ Page({
 
   async onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({ reviewMode: app.globalData.reviewMode || false })
+      const reviewMode = app.globalData.reviewMode
+      this.getTabBar().setData({ selected: reviewMode ? 1 : 2, reviewMode })
     }
     if (!getToken() && app.loginPromise) {
       await app.loginPromise

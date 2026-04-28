@@ -18,7 +18,7 @@ App<IAppOption>({
     openid: '',
     family: null,
     memberMap: {},
-    reviewMode: true
+    reviewMode: false
   },
 
   onLaunch() {
