@@ -53,7 +53,7 @@ app.use(async (ctx) => {
   ctx.body = { code: 404, msg: '接口不存在' }
 })
 
-app.listen(PORT, () => {
+app.listen(PORT, '127.0.0.1', () => {
   console.log(`🚀 Server running on port ${PORT}`)
   console.log(`📎 API Base: http://localhost:${PORT}/api`)
   startScheduler()
