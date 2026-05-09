@@ -9,6 +9,7 @@ const familyRouter = require('./routes/family')
 const eventRouter = require('./routes/event')
 const userRouter = require('./routes/user')
 const configRouter = require('./routes/config')
+const { startScheduler } = require('./scheduler')
 
 const app = new Koa()
 const PORT = process.env.PORT || 3000
@@ -55,4 +56,5 @@ app.use(async (ctx) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`)
   console.log(`📎 API Base: http://localhost:${PORT}/api`)
+  startScheduler()
 })

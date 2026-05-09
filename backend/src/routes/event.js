@@ -1,7 +1,6 @@
 const Router = require('koa-router')
 const { all, get, run } = require('../db')
 const { authMiddleware } = require('../middleware/auth')
-const { sendSubscribeMessage } = require('../utils/wx')
 const { isReviewMode } = require('../config')
 
 const router = new Router({ prefix: '/api/events' })
@@ -247,26 +246,6 @@ router.post('/', async (ctx) => {
   )
 
   const evt = rowToEvent(await get('SELECT * FROM events WHERE id = ?', [result.lastID]))
-
-  // 发送订阅消息提醒
-  if (reminderEnabled) {
-    try {
-      const creator = await get('SELECT * FROM users WHERE openid = ?', [openid])
-      const fmt = (d) => {
-        const date = new Date(d)
-        return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`
-      }
-      await sendSubscribeMessage(openid, 'NUejq84LuZ3CzlnoKnaDN-YczktShhR-71EWRCIs4F4', '/pages/index/index', {
-        name1: { value: creator && creator.nick_name ? creator.nick_name : '家人' },
-        thing3: { value: title.trim().slice(0, 20) },
-        time13: { value: fmt(startTime) },
-        time14: { value: fmt(endTime) }
-      })
-    } catch (err) {
-      console.error('发送订阅消息失败', err.message)
-    }
-  }
-
   ctx.body = { code: 200, data: evt }
 })
 
