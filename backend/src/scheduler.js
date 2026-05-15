@@ -6,21 +6,30 @@ const TMPL_ID = 'NUejq84LuZ3CzlnoKnaDN-YczktShhR-71EWRCIs4F4'
 async function checkAndSendReminders() {
   try {
     const now = new Date()
+    // 放宽窗口：过去1小时内（防止刚好错过） + 未来24小时内
+    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000)
     const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000)
+
+    console.log(`[提醒] 扫描中... 范围: ${oneHourAgo.toISOString()} ~ ${tomorrow.toISOString()}`)
 
     const rows = await all(
       `SELECT * FROM events WHERE reminders LIKE '%"enabled":true%' AND start_time > ? AND start_time <= ?`,
-      [now.toISOString(), tomorrow.toISOString()]
+      [oneHourAgo.toISOString(), tomorrow.toISOString()]
     )
+
+    console.log(`[提醒] 找到 ${rows.length} 条待提醒`)
 
     for (const row of rows) {
       const reminders = JSON.parse(row.reminders || '{}')
-      if (!reminders.enabled || reminders.sent) continue
+      console.log(`[提醒] 检查: id=${row.id} title=${row.title} start_time=${row.start_time} sent=${reminders.sent}`)
+      if (!reminders.enabled || reminders.sent) {
+        console.log(`[提醒] 跳过: enabled=${reminders.enabled} sent=${reminders.sent}`)
+        continue
+      }
 
       try {
         const creator = await get('SELECT * FROM users WHERE openid = ?', [row.creator_openid])
         const fmt = (d) => {
-          // 数据库里是 UTC，手动转东八区显示，不依赖服务器本地时区
           const date = new Date(d)
           const offset = 8 * 60 * 60 * 1000
           const local = new Date(date.getTime() + offset)
@@ -44,13 +53,13 @@ async function checkAndSendReminders() {
           row.id
         ])
 
-        console.log(`[提醒] 已发送: ${row.title} (${row.start_time})`)
+        console.log(`[提醒] ✅ 已发送: ${row.title} (${fmt(row.start_time)})`)
       } catch (err) {
-        console.error(`[提醒] 发送失败: ${row.title}`, err.message)
+        console.error(`[提醒] ❌ 发送失败: ${row.title}`, err.message)
       }
     }
   } catch (err) {
-    console.error('[提醒] 检查失败', err)
+    console.error('[提醒] 扫描失败', err)
   }
 }
 
