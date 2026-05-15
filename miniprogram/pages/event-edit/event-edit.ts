@@ -126,10 +126,12 @@ Page({
           })
         })
         if (authRes[SUBSCRIBE_TMPL_ID] !== 'accept') {
-          wx.showToast({ title: '未获得提醒授权', icon: 'none' })
+          wx.showToast({ title: '未获得提醒授权，无法开启提醒', icon: 'none' })
+          return
         }
       } catch (err: any) {
-        wx.showToast({ title: '提醒授权失败', icon: 'none' })
+        wx.showToast({ title: '提醒授权失败，无法开启提醒', icon: 'none' })
+        return
       }
     }
 
