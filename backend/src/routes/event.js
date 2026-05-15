@@ -293,8 +293,15 @@ router.put('/:id', async (ctx) => {
   for (const key of allowed) {
     if (data[key] !== undefined) {
       if (key === 'reminderEnabled') {
+        const existingReminders = row.reminders ? JSON.parse(row.reminders) : {}
+        const newEnabled = !!data[key]
+        // 只有从关闭切换到开启时才重置 sent，否则保留已有 sent 状态避免重复发送
+        const shouldResetSent = newEnabled && !existingReminders.enabled
         sets.push('reminders = ?')
-        vals.push(JSON.stringify({ enabled: !!data[key] }))
+        vals.push(JSON.stringify({
+          enabled: newEnabled,
+          sent: shouldResetSent ? false : existingReminders.sent
+        }))
         continue
       }
       let dbKey = key.replace(/[A-Z]/g, m => '_' + m.toLowerCase())
