@@ -20,8 +20,16 @@ async function checkAndSendReminders() {
       try {
         const creator = await get('SELECT * FROM users WHERE openid = ?', [row.creator_openid])
         const fmt = (d) => {
+          // 数据库里是 UTC，手动转东八区显示，不依赖服务器本地时区
           const date = new Date(d)
-          return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
+          const offset = 8 * 60 * 60 * 1000
+          const local = new Date(date.getTime() + offset)
+          const y = local.getUTCFullYear()
+          const m = String(local.getUTCMonth() + 1).padStart(2, '0')
+          const day = String(local.getUTCDate()).padStart(2, '0')
+          const h = String(local.getUTCHours()).padStart(2, '0')
+          const min = String(local.getUTCMinutes()).padStart(2, '0')
+          return `${y}-${m}-${day} ${h}:${min}`
         }
 
         await sendSubscribeMessage(row.creator_openid, TMPL_ID, '/pages/index/index', {
