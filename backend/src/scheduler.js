@@ -6,15 +6,14 @@ const TMPL_ID = 'NUejq84LuZ3CzlnoKnaDN-YczktShhR-71EWRCIs4F4'
 async function checkAndSendReminders() {
   try {
     const now = new Date()
-    // 放宽窗口：过去1小时内（防止刚好错过） + 未来24小时内
-    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000)
-    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000)
+    // 只找未来5分钟内开始的日程，提醒在 start_time 前 0~5 分钟发出
+    const fiveMinutesLater = new Date(now.getTime() + 5 * 60 * 1000)
 
-    console.log(`[提醒] 扫描中... 范围: ${oneHourAgo.toISOString()} ~ ${tomorrow.toISOString()}`)
+    console.log(`[提醒] 扫描中... 范围: ${now.toISOString()} ~ ${fiveMinutesLater.toISOString()}`)
 
     const rows = await all(
       `SELECT * FROM events WHERE reminders LIKE '%"enabled":true%' AND start_time > ? AND start_time <= ?`,
-      [oneHourAgo.toISOString(), tomorrow.toISOString()]
+      [now.toISOString(), fiveMinutesLater.toISOString()]
     )
 
     console.log(`[提醒] 找到 ${rows.length} 条待提醒`)
